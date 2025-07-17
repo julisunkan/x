@@ -148,7 +148,14 @@ def delete_user(user_id):
         from models.task import TaskCompletion
         from models.withdrawal import Withdrawal
         from models.airdrop import AirdropParticipation
-        from models.referral import Referral
+        from models.referral import Referral, ReferralEarning
+        
+        # Delete referral earnings for referrals where this user is involved
+        referrals_as_referrer = Referral.query.filter_by(referrer_id=user_id).all()
+        referrals_as_referred = Referral.query.filter_by(referred_id=user_id).all()
+        
+        for referral in referrals_as_referrer + referrals_as_referred:
+            ReferralEarning.query.filter_by(referral_id=referral.id).delete()
         
         # Delete mining sessions
         MiningSession.query.filter_by(user_id=user_id).delete()
@@ -162,9 +169,9 @@ def delete_user(user_id):
         # Delete airdrop participations
         AirdropParticipation.query.filter_by(user_id=user_id).delete()
         
-        # Delete referrals (both as referrer and referee)
+        # Delete referrals (both as referrer and referred)
         Referral.query.filter_by(referrer_id=user_id).delete()
-        Referral.query.filter_by(referee_id=user_id).delete()
+        Referral.query.filter_by(referred_id=user_id).delete()
         
         # Finally delete the user
         db.session.delete(user)
