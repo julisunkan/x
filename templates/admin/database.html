@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Database Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="admin-sidebar">
+                <h5>Admin Panel</h5>
+                <div class="nav nav-pills flex-column">
+                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+                    <a class="nav-link" href="{{ url_for('admin.users') }}">Users</a>
+                    <a class="nav-link" href="{{ url_for('admin.tasks') }}">Tasks</a>
+                    <a class="nav-link" href="{{ url_for('admin.withdrawals') }}">Withdrawals</a>
+                    <a class="nav-link" href="{{ url_for('admin.airdrops') }}">Airdrops</a>
+                    <a class="nav-link" href="{{ url_for('admin.settings') }}">Settings</a>
+                    <a class="nav-link active" href="{{ url_for('admin.database_management') }}">Database</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Database Management</h1>
+            </div>
+            
+            <!-- Database Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Tables</h5>
+                            <h3>{{ stats.tables_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Users</h5>
+                            <h3>{{ stats.users_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Tasks</h5>
+                            <h3>{{ stats.tasks_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Withdrawals</h5>
+                            <h3>{{ stats.withdrawals_count }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Database Actions -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Export Database</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Export all database data to a JSON file for backup or migration.</p>
+                            <form method="POST" action="{{ url_for('admin.export_database') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-download me-2"></i>Export Database
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Import Database</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-danger">⚠️ This will overwrite all existing data!</p>
+                            <form method="POST" action="{{ url_for('admin.import_database') }}" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <div class="mb-3">
+                                    <label for="backup_file" class="form-label">Select Backup File</label>
+                                    <input type="file" class="form-control" id="backup_file" name="backup_file" accept=".json" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirm_import" class="form-label">Type "yes" to confirm</label>
+                                    <input type="text" class="form-control" id="confirm_import" name="confirm_import" required>
+                                </div>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-upload me-2"></i>Import Database
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Backup History -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Backup History</h5>
+                </div>
+                <div class="card-body">
+                    {% if backups %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Filename</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Size</th>
+                                    <th>Tables</th>
+                                    <th>Records</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for backup in backups %}
+                                <tr>
+                                    <td>{{ backup.filename }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if backup.backup_type == 'manual' else 'secondary' }}">
+                                            {{ backup.backup_type }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if backup.status == 'completed' else 'danger' if backup.status == 'failed' else 'warning' }}">
+                                            {{ backup.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ ((backup.file_size or 0) / 1024 / 1024) | round(2) }} MB</td>
+                                    <td>{{ backup.tables_count or '-' }}</td>
+                                    <td>{{ backup.records_count or '-' }}</td>
+                                    <td>{{ backup.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        {% if backup.status == 'completed' %}
+                                            <a href="{{ url_for('admin.download_backup', filename=backup.filename) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No backups found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Airdrops - RoseCoin Mining Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <h2><i class="fas fa-gift me-2"></i>Airdrops</h2>
+                    <p class="text-muted mb-0">Participate in exclusive airdrops to earn free RoseCoins!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Airdrops -->
+    {% if airdrops %}
+    <div class="row g-4">
+        {% for airdrop in airdrops %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-0">{{ airdrop.title }}</h5>
+                        {% if airdrop.id in participations %}
+                        <span class="badge bg-success">Joined</span>
+                        {% elif airdrop.can_participate %}
+                        <span class="badge bg-primary">Available</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Full</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if airdrop.description %}
+                    <p class="card-text">{{ airdrop.description }}</p>
+                    {% endif %}
+                    
+                    <!-- Airdrop Details -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Reward per User</small>
+                            <div class="fw-bold text-warning">
+                                <i class="fas fa-coins me-1"></i>{{ airdrop.coins_per_user }} coins
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Participants</small>
+                            <div class="fw-bold">
+                                {{ airdrop.current_participants }}
+                                {% if airdrop.max_participants %}
+                                / {{ airdrop.max_participants }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Start Date</small>
+                            <div class="fw-bold">{{ airdrop.start_date.strftime('%m/%d/%Y %H:%M') }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">End Date</small>
+                            <div class="fw-bold">{{ airdrop.end_date.strftime('%m/%d/%Y %H:%M') }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Requirements -->
+                    <div class="mb-3">
+                        <h6>Requirements:</h6>
+                        <ul class="list-unstyled">
+                            {% if airdrop.min_level > 1 %}
+                            <li class="d-flex align-items-center mb-1">
+                                {% if current_user.level >= airdrop.min_level %}
+                                <i class="fas fa-check text-success me-2"></i>
+                                {% else %}
+                                <i class="fas fa-times text-danger me-2"></i>
+                                {% endif %}
+                                Level {{ airdrop.min_level }}+ (You: {{ current_user.level }})
+                            </li>
+                            {% endif %}
+                            
+                            {% if airdrop.min_balance > 0 %}
+                            <li class="d-flex align-items-center mb-1">
+                                {% if current_user.balance >= airdrop.min_balance %}
+                                <i class="fas fa-check text-success me-2"></i>
+                                {% else %}
+                                <i class="fas fa-times text-danger me-2"></i>
+                                {% endif %}
+                                {{ airdrop.min_balance }} coins balance (You: {{ "%.4f"|format(current_user.balance) }})
+                            </li>
+                            {% endif %}
+                            
+                            {% if airdrop.min_referrals > 0 %}
+                            <li class="d-flex align-items-center mb-1">
+                                <i class="fas fa-users me-2"></i>
+                                {{ airdrop.min_referrals }} referrals required
+                            </li>
+                            {% endif %}
+                            
+                            {% if airdrop.requires_task_completion and airdrop.required_task %}
+                            <li class="d-flex align-items-center mb-1">
+                                <i class="fas fa-tasks me-2"></i>
+                                Complete task: {{ airdrop.required_task.title }}
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    {% if airdrop.max_participants %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Participants</small>
+                            <small class="text-muted">{{ airdrop.current_participants }} / {{ airdrop.max_participants }}</small>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ (airdrop.current_participants / airdrop.max_participants * 100) }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Action Button -->
+                    <div class="d-grid">
+                        {% if airdrop.id in participations %}
+                        {% set participation = participations[airdrop.id] %}
+                        {% if participation.is_distributed %}
+                        <button class="btn btn-success" disabled>
+                            <i class="fas fa-check me-2"></i>Rewards Received ({{ participation.coins_received }} coins)
+                        </button>
+                        {% else %}
+                        <button class="btn btn-info" disabled>
+                            <i class="fas fa-clock me-2"></i>Waiting for Distribution
+                        </button>
+                        {% endif %}
+                        {% elif not airdrop.can_participate %}
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-ban me-2"></i>
+                            {% if airdrop.max_participants and airdrop.current_participants >= airdrop.max_participants %}
+                            Airdrop Full
+                            {% else %}
+                            Requirements Not Met
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('join_airdrop', airdrop_id=airdrop.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-gift me-2"></i>Join Airdrop
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-gift text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h4>No Active Airdrops</h4>
+                    <p class="text-muted">Check back later for new airdrop opportunities!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>How Airdrops Work
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-3 text-center">
+                            <i class="fas fa-eye text-primary mb-2" style="font-size: 2rem;"></i>
+                            <h6>1. Find Airdrops</h6>
+                            <p class="small text-muted">Browse available airdrops and check requirements</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                            <h6>2. Meet Requirements</h6>
+                            <p class="small text-muted">Ensure you meet level, balance, and other criteria</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <i class="fas fa-mouse-pointer text-info mb-2" style="font-size: 2rem;"></i>
+                            <h6>3. Join Airdrop</h6>
+                            <p class="small text-muted">Click "Join Airdrop" to participate</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <i class="fas fa-coins text-warning mb-2" style="font-size: 2rem;"></i>
+                            <h6>4. Receive Rewards</h6>
+                            <p class="small text-muted">Get your free coins when the airdrop is distributed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

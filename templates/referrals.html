@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Referrals - RoseCoin Mining Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <h2><i class="fas fa-users me-2"></i>Referral Program</h2>
+                    <p class="text-muted mb-0">Invite friends and earn commission from their activities!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referral Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-primary mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Total Referrals</h5>
+                    <h3 class="text-primary">{{ referrals|length }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-coins text-warning mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Total Earnings</h5>
+                    <h3 class="text-warning">{{ "%.4f"|format(total_earnings) }}</h3>
+                    <small class="text-muted">RoseCoins</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-percentage text-success mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Commission Rate</h5>
+                    <h3 class="text-success">5-10%</h3>
+                    <small class="text-muted">Mining & Tasks</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referral Link -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-link me-2"></i>Your Referral Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="referral-code" class="form-label">Your Referral Code</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="referral-code" 
+                                       value="{{ current_user.referral_code }}" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('referral-code')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="referral-link" class="form-label">Your Referral Link</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="referral-link" 
+                                       value="{{ url_for('auth.register', _external=True) }}?ref={{ current_user.referral_code }}" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('referral-link')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>How it works:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Share your referral code or link with friends</li>
+                            <li><i class="fas fa-check text-success me-2"></i>When they sign up, you both get bonus coins</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Earn 5% commission from their mining activities</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Earn 10% commission from their task completions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your Referrals -->
+    {% if referrals %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Your Referrals
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Joined</th>
+                                    <th>Level</th>
+                                    <th>Status</th>
+                                    <th>Earnings from User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for referral, user in referrals %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ user.avatar_url }}" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+                                            <div>
+                                                <strong>{{ user.username }}</strong>
+                                                {% if user.first_name %}
+                                                <br><small class="text-muted">{{ user.first_name }} {{ user.last_name or '' }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small>{{ user.created_at.strftime('%m/%d/%Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Level {{ user.level }}</span>
+                                    </td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="text-warning fw-bold">
+                                            <i class="fas fa-coins me-1"></i>{{ "%.4f"|format(referral.earnings) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-users text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h4>No Referrals Yet</h4>
+                    <p class="text-muted mb-4">Start sharing your referral code to earn commission!</p>
+                    <button class="btn btn-primary" onclick="shareReferralLink()">
+                        <i class="fas fa-share me-2"></i>Share Referral Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    element.select();
+    element.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = element.nextElementSibling;
+    const originalIcon = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i>';
+    button.classList.remove('btn-outline-secondary');
+    button.classList.add('btn-success');
+    
+    setTimeout(() => {
+        button.innerHTML = originalIcon;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+    }, 2000);
+}
+
+function shareReferralLink() {
+    const referralLink = document.getElementById('referral-link').value;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Join RoseCoin Mining Platform',
+            text: 'Start mining RoseCoins with me! Use my referral link to get bonus coins.',
+            url: referralLink
+        });
+    } else {
+        copyToClipboard('referral-link');
+        alert('Referral link copied to clipboard!');
+    }
+}
+</script>
+{% endblock %}

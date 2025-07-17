@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Task Completion Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Task Details -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="me-3">
+                            <i class="fab fa-{{ completion.task.platform }} text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="mb-1">{{ completion.task.title }}</h2>
+                            <p class="text-muted">{{ completion.task.platform.title() }} • {{ completion.task.task_type.title() }}</p>
+                        </div>
+                        <div>
+                            {% if completion.status == 'pending' %}
+                            <span class="badge bg-warning" style="font-size: 1rem;">Pending Review</span>
+                            {% elif completion.status == 'approved' %}
+                            <span class="badge bg-success" style="font-size: 1rem;">Approved</span>
+                            {% elif completion.status == 'rejected' %}
+                            <span class="badge bg-danger" style="font-size: 1rem;">Rejected</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Task Info -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <small class="text-muted">Submitted:</small>
+                            <p class="mb-0">{{ completion.submitted_at.strftime('%B %d, %Y at %H:%M') }}</p>
+                        </div>
+                        {% if completion.completed_at %}
+                        <div class="col-md-6">
+                            <small class="text-muted">Completed:</small>
+                            <p class="mb-0">{{ completion.completed_at.strftime('%B %d, %Y at %H:%M') }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Rewards -->
+                    <div class="mb-3">
+                        <small class="text-muted">Rewards:</small>
+                        <div>
+                            <span class="badge bg-warning me-2">
+                                <i class="fas fa-coins me-1"></i>{{ completion.task.coin_reward }} coins
+                            </span>
+                            {% if completion.task.xp_reward > 0 %}
+                            <span class="badge bg-info">
+                                <i class="fas fa-star me-1"></i>{{ completion.task.xp_reward }} XP
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submitted Proof -->
+            {% if completion.proof_text or completion.proof_file_path %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Submitted Proof
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if completion.proof_text %}
+                    <div class="mb-3">
+                        <h6>Description:</h6>
+                        <p class="bg-light p-3 rounded">{{ completion.proof_text }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if completion.proof_file_path %}
+                    <div class="mb-3">
+                        <h6>Proof Image:</h6>
+                        <img src="{{ url_for('uploaded_file', filename=completion.proof_file_path) }}" 
+                             alt="Proof Image" class="img-fluid rounded" style="max-height: 400px;">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- AI Verification -->
+            {% if completion.ai_verification_score %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-robot me-2"></i>AI Verification
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Confidence Score:</small>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2">
+                                    <div class="progress-bar {% if completion.ai_verification_score >= 0.8 %}bg-success{% elif completion.ai_verification_score >= 0.5 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                         role="progressbar" style="width: {{ (completion.ai_verification_score * 100) }}%"></div>
+                                </div>
+                                <span class="fw-bold">{{ (completion.ai_verification_score * 100)|round }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if completion.ai_verification_notes %}
+                    <div class="mt-3">
+                        <small class="text-muted">AI Notes:</small>
+                        <p class="bg-light p-3 rounded mb-0">{{ completion.ai_verification_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Admin Review -->
+            {% if completion.reviewed_by or completion.review_notes %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-shield me-2"></i>Admin Review
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if completion.reviewed_at %}
+                    <div class="mb-2">
+                        <small class="text-muted">Reviewed:</small>
+                        <p class="mb-0">{{ completion.reviewed_at.strftime('%B %d, %Y at %H:%M') }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if completion.review_notes %}
+                    <div>
+                        <small class="text-muted">Admin Notes:</small>
+                        <p class="bg-light p-3 rounded mb-0">{{ completion.review_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Back Button -->
+            <div class="text-center">
+                <a href="{{ url_for('tasks.tasks_page') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Tasks
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

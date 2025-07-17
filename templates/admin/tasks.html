@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Tasks - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-tasks me-2"></i>Manage Tasks</h2>
+                            <p class="text-muted mb-0">Create and manage platform tasks</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('admin.create_task') }}" class="btn btn-primary me-2">
+                                <i class="fas fa-plus me-2"></i>Create Task
+                            </a>
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks Grid -->
+    <div class="row g-4">
+        {% for task in tasks %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-center">
+                            <i class="fab fa-{{ task.platform }} text-primary me-2" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h5 class="card-title mb-0">{{ task.title }}</h5>
+                                <small class="text-muted">{{ task.platform.title() }} • {{ task.task_type.title() }}</small>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form method="POST" action="{{ url_for('admin.toggle_task', task_id=task.id) }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="dropdown-item">
+                                            {% if task.is_active %}
+                                            <i class="fas fa-pause me-2"></i>Deactivate
+                                            {% else %}
+                                            <i class="fas fa-play me-2"></i>Activate
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteTask({{ task.id }})">
+                                    <i class="fas fa-trash me-2"></i>Delete
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if task.description %}
+                    <p class="card-text">{{ task.description[:100] }}{% if task.description|length > 100 %}...{% endif %}</p>
+                    {% endif %}
+                    
+                    {% if task.url %}
+                    <div class="mb-3">
+                        <small class="text-muted">Task URL:</small>
+                        <br><a href="{{ task.url }}" target="_blank" class="text-decoration-none">
+                            <i class="fas fa-external-link-alt me-1"></i>{{ task.url[:50] }}{% if task.url|length > 50 %}...{% endif %}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Task Stats -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Reward</small>
+                            <div class="fw-bold text-warning">
+                                <i class="fas fa-coins me-1"></i>{{ task.coin_reward }}
+                                {% if task.xp_reward > 0 %}
+                                <br><small class="text-info"><i class="fas fa-star me-1"></i>{{ task.xp_reward }} XP</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Completions</small>
+                            <div class="fw-bold">
+                                {{ task.current_completions }}
+                                {% if task.max_completions %}
+                                / {{ task.max_completions }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    {% if task.max_completions %}
+                    <div class="mb-3">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ (task.current_completions / task.max_completions * 100) }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Task Properties -->
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        {% if task.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                        
+                        {% if task.requires_proof %}
+                        <span class="badge bg-info">Requires Proof</span>
+                        {% endif %}
+                        
+                        {% if task.requires_admin_approval %}
+                        <span class="badge bg-warning">Admin Approval</span>
+                        {% endif %}
+                        
+                        {% if not task.is_available %}
+                        <span class="badge bg-danger">Full</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Creation Info -->
+                    <small class="text-muted">
+                        Created: {{ task.created_at.strftime('%m/%d/%Y %H:%M') }}
+                        {% if task.updated_at != task.created_at %}
+                        <br>Updated: {{ task.updated_at.strftime('%m/%d/%Y %H:%M') }}
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if not tasks %}
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-tasks text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h4>No Tasks Created</h4>
+                    <p class="text-muted mb-4">Create your first task to get started!</p>
+                    <a href="{{ url_for('admin.create_task') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Task
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if tasks %}
+    <!-- Task Completions Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clipboard-check me-2"></i>Recent Task Completions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Task</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>AI Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="completions-table">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading completions...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+        // In a real implementation, this would make an AJAX call to delete the task
+        window.location.href = `/admin/tasks/${taskId}/delete`;
+    }
+}
+
+// Load recent task completions
+document.addEventListener('DOMContentLoaded', function() {
+    // This would typically load via AJAX
+    // For now, show a message that no completions are loaded
+    setTimeout(() => {
+        document.getElementById('completions-table').innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    No recent task completions to display.
+                </td>
+            </tr>
+        `;
+    }, 1000);
+});
+</script>
+{% endblock %}

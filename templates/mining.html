@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Mining - {{ app_settings.app_name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mining.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Mining Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow card-gradient h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-coins text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Balance</h5>
+                    <h3 class="text-warning" id="user-balance">{{ "%.4f"|format(current_user.balance) }}</h3>
+                    <small class="text-muted">Coins</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow card-gradient h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-star text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Level</h5>
+                    <h3 class="text-info" id="user-level">{{ current_user.level }}</h3>
+                    <small class="text-muted">Current</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow card-gradient h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-trophy text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">XP</h5>
+                    <h3 class="text-success" id="user-xp">{{ current_user.xp }}</h3>
+                    <div class="progress mt-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ current_user.xp_progress }}%" 
+                             id="xp-progress">
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        <span id="current-xp">{{ current_user.xp }}</span> / 
+                        <span id="next-level-xp">{{ current_user.xp_for_next_level }}</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow card-gradient h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-bolt text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Mining Power</h5>
+                    <h3 class="text-danger">{{ "%.1f"|format(current_user.mining_power) }}x</h3>
+                    <small class="text-muted">Per Tap</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mining Interface -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-6 text-center">
+            <div class="card border-0 shadow mining-card">
+                <div class="card-body p-5">
+                    <h2 class="mb-4">Tap to Mine!</h2>
+                    
+                    <!-- Mining Button -->
+                    <div class="mining-container mb-4">
+                        <button id="mine-btn" class="btn-mine mining-button" onclick="startMining()">
+                            <i class="fas fa-coins"></i>
+                            <span class="mine-text">MINE</span>
+                        </button>
+                        
+                        <!-- Floating coins animation container -->
+                        <div id="floating-coins"></div>
+                    </div>
+                    
+                    <!-- Mining Cooldown -->
+                    <div id="cooldown-display" class="mb-3" style="display: none;">
+                        <small class="text-muted">Next mine in: <span id="cooldown-timer">0</span>s</small>
+                    </div>
+                    
+                    <!-- Last Mining Result -->
+                    <div id="mining-result" class="alert alert-success" style="display: none;" role="alert">
+                        <strong>Success!</strong> You earned <span id="earned-coins">0</span> coins and <span id="earned-xp">0</span> XP!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Events -->
+    {% if events %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-fire text-danger me-2"></i>Active Mining Events
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for event in events %}
+                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <i class="fas fa-star me-3"></i>
+                        <div>
+                            <strong>{{ event.name }}</strong>
+                            <p class="mb-0">{{ event.description }}</p>
+                            <small class="text-muted">
+                                {% if event.multiplier > 1 %}{{ event.multiplier }}x multiplier • {% endif %}
+                                {% if event.bonus_coins > 0 %}+{{ event.bonus_coins }} bonus coins • {% endif %}
+                                {% if event.bonus_xp > 0 %}+{{ event.bonus_xp }} bonus XP • {% endif %}
+                                Ends: {{ event.end_time.strftime('%m/%d %H:%M') }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Daily Missions -->
+    {% if missions %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-trophy text-warning me-2"></i>Daily Missions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for mission in missions %}
+                        <div class="col-md-4">
+                            <div class="card border h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ mission.name }}</h6>
+                                    <p class="card-text small text-muted">{{ mission.description }}</p>
+                                    
+                                    <!-- Progress Bar -->
+                                    {% set progress = mission_progress.get(mission.id, 0) %}
+                                    {% set percentage = (progress / mission.target_amount * 100) if mission.target_amount > 0 else 0 %}
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ percentage }}%"></div>
+                                    </div>
+                                    <small class="text-muted">{{ progress }} / {{ mission.target_amount }}</small>
+                                    
+                                    <!-- Rewards -->
+                                    <div class="mt-2">
+                                        <span class="badge bg-warning me-1">
+                                            <i class="fas fa-coins me-1"></i>{{ mission.coin_reward }}
+                                        </span>
+                                        {% if mission.xp_reward > 0 %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-star me-1"></i>{{ mission.xp_reward }} XP
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Claim Button -->
+                                    {% if progress >= mission.target_amount %}
+                                    <form method="POST" action="{{ url_for('mining.claim_mission_reward', mission_id=mission.id) }}" class="mt-2">
+                                        <button type="submit" class="btn btn-sm btn-success w-100">
+                                            <i class="fas fa-gift me-1"></i>Claim Reward
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/mining.js') }}"></script>
+{% endblock %}

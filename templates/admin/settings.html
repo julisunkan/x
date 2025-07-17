@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Platform Settings - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-cog me-2"></i>Platform Settings</h2>
+                            <p class="text-muted mb-0">Configure platform features and limits</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('admin.database_management') }}" class="btn btn-outline-info me-2">
+                                <i class="fas fa-database me-2"></i>Database
+                            </a>
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- App Settings -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-palette me-2"></i>App Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.update_app_settings') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="app_name" class="form-label">Application Name</label>
+                            <input type="text" class="form-control" id="app_name" name="app_name" 
+                                   value="{{ app_settings.app_name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="app_description" class="form-label">Description</label>
+                            <textarea class="form-control" id="app_description" name="app_description" rows="3">{{ app_settings.app_description }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="primary_color" class="form-label">Primary Color</label>
+                                <input type="color" class="form-control form-control-color" id="primary_color" 
+                                       name="primary_color" value="{{ app_settings.primary_color }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="secondary_color" class="form-label">Secondary Color</label>
+                                <input type="color" class="form-control form-control-color" id="secondary_color" 
+                                       name="secondary_color" value="{{ app_settings.secondary_color }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="contact_email" class="form-label">Contact Email</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email" 
+                                       value="{{ app_settings.contact_email }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="support_email" class="form-label">Support Email</label>
+                                <input type="email" class="form-control" id="support_email" name="support_email" 
+                                       value="{{ app_settings.support_email }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="twitter_url" class="form-label">Twitter URL</label>
+                                <input type="url" class="form-control" id="twitter_url" name="twitter_url" 
+                                       value="{{ app_settings.twitter_url }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="telegram_url" class="form-label">Telegram URL</label>
+                                <input type="url" class="form-control" id="telegram_url" name="telegram_url" 
+                                       value="{{ app_settings.telegram_url }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="discord_url" class="form-label">Discord URL</label>
+                                <input type="url" class="form-control" id="discord_url" name="discord_url" 
+                                       value="{{ app_settings.discord_url }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="maintenance_mode" name="maintenance_mode" 
+                                   {% if app_settings.maintenance_mode %}checked{% endif %}>
+                            <label class="form-check-label" for="maintenance_mode">
+                                Maintenance Mode
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="maintenance_message" class="form-label">Maintenance Message</label>
+                            <textarea class="form-control" id="maintenance_message" name="maintenance_message" rows="2">{{ app_settings.maintenance_message }}</textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update App Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SMTP Settings -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-envelope me-2"></i>SMTP Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.update_smtp_settings') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="smtp_server" class="form-label">SMTP Server</label>
+                                <input type="text" class="form-control" id="smtp_server" name="smtp_server" 
+                                       value="{{ app_settings.smtp_server }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="smtp_port" class="form-label">Port</label>
+                                <input type="number" class="form-control" id="smtp_port" name="smtp_port" 
+                                       value="{{ app_settings.smtp_port }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="smtp_username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="smtp_username" name="smtp_username" 
+                                       value="{{ app_settings.smtp_username }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="smtp_password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="smtp_password" name="smtp_password" 
+                                       value="{{ app_settings.smtp_password }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="smtp_from_email" class="form-label">From Email</label>
+                                <input type="email" class="form-control" id="smtp_from_email" name="smtp_from_email" 
+                                       value="{{ app_settings.smtp_from_email }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="smtp_from_name" class="form-label">From Name</label>
+                                <input type="text" class="form-control" id="smtp_from_name" name="smtp_from_name" 
+                                       value="{{ app_settings.smtp_from_name }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="smtp_use_tls" name="smtp_use_tls" 
+                                   {% if app_settings.smtp_use_tls %}checked{% endif %}>
+                            <label class="form-check-label" for="smtp_use_tls">
+                                Use TLS
+                            </label>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update SMTP Settings
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="testSMTP()">
+                                <i class="fas fa-paper-plane me-2"></i>Test SMTP
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Withdrawal Settings -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-wallet me-2"></i>Withdrawal Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.update_withdrawal_settings') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="min_withdrawal_amount" class="form-label">Minimum Withdrawal Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-coins"></i>
+                                </span>
+                                <input type="number" class="form-control" id="min_withdrawal_amount" 
+                                       name="min_withdrawal_amount" step="0.0001" min="0.0001" 
+                                       value="{{ withdrawal_settings.min_withdrawal_amount }}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="max_withdrawal_amount" class="form-label">Maximum Withdrawal Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-coins"></i>
+                                </span>
+                                <input type="number" class="form-control" id="max_withdrawal_amount" 
+                                       name="max_withdrawal_amount" step="0.0001" min="1" 
+                                       value="{{ withdrawal_settings.max_withdrawal_amount }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="withdrawal_fee_percentage" class="form-label">Fee Percentage</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="withdrawal_fee_percentage" 
+                                           name="withdrawal_fee_percentage" step="0.01" min="0" max="100" 
+                                           value="{{ withdrawal_settings.withdrawal_fee_percentage }}" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="withdrawal_fee_fixed" class="form-label">Fixed Fee</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-coins"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="withdrawal_fee_fixed" 
+                                           name="withdrawal_fee_fixed" step="0.0001" min="0" 
+                                           value="{{ withdrawal_settings.withdrawal_fee_fixed }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="withdrawals_enabled" name="withdrawals_enabled" 
+                                   {% if withdrawal_settings.withdrawals_enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="withdrawals_enabled">
+                                Enable Withdrawals
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Withdrawal Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Referral Settings -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users me-2"></i>Referral Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.update_referral_settings') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="signup_bonus" class="form-label">Signup Bonus</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-coins"></i>
+                                </span>
+                                <input type="number" class="form-control" id="signup_bonus" name="signup_bonus" 
+                                       step="0.01" min="0" value="{{ referral_settings.signup_bonus }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="mining_commission" class="form-label">Mining Commission</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="mining_commission" name="mining_commission" 
+                                           step="0.01" min="0" max="100" value="{{ referral_settings.mining_commission }}" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="task_commission" class="form-label">Task Commission</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="task_commission" name="task_commission" 
+                                           step="0.01" min="0" max="100" value="{{ referral_settings.task_commission }}" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                   {% if referral_settings.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Enable Referral System
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Referral Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function testSMTP() {
+    fetch('{{ url_for("admin.test_smtp") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'csrf_token=' + encodeURIComponent('{{ csrf_token() }}')
+    })
+    .then(response => response.text())
+    .then(data => {
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error testing SMTP:', error);
+    });
+}
+</script>
+{% endblock %}

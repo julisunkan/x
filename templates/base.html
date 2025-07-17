@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{{ app_settings.app_name }}{% endblock %}</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RoseCoin">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon-192.svg') }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Dynamic Theme CSS -->
+    <style>
+        :root {
+            --bs-primary: {{ app_settings.primary_color or '#0d6efd' }};
+            --bs-secondary: {{ app_settings.secondary_color or '#6c757d' }};
+            --bs-success: {{ app_settings.success_color or '#198754' }};
+            --bs-warning: {{ app_settings.warning_color or '#ffc107' }};
+            --bs-danger: {{ app_settings.danger_color or '#dc3545' }};
+        }
+        
+        .bg-primary { background-color: var(--bs-primary) !important; }
+        .btn-primary { background-color: var(--bs-primary) !important; border-color: var(--bs-primary) !important; }
+        .text-primary { color: var(--bs-primary) !important; }
+        .border-primary { border-color: var(--bs-primary) !important; }
+        
+        .bg-secondary { background-color: var(--bs-secondary) !important; }
+        .btn-secondary { background-color: var(--bs-secondary) !important; border-color: var(--bs-secondary) !important; }
+        
+        .bg-success { background-color: var(--bs-success) !important; }
+        .btn-success { background-color: var(--bs-success) !important; border-color: var(--bs-success) !important; }
+        
+        .bg-warning { background-color: var(--bs-warning) !important; }
+        .btn-warning { background-color: var(--bs-warning) !important; border-color: var(--bs-warning) !important; }
+        
+        .bg-danger { background-color: var(--bs-danger) !important; }
+        .btn-danger { background-color: var(--bs-danger) !important; border-color: var(--bs-danger) !important; }
+        
+        .mining-button {
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-success)) !important;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .mining-button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+        }
+        
+        .card-gradient {
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(25, 135, 84, 0.1)) !important;
+            border: 1px solid rgba(13, 110, 253, 0.2) !important;
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Header Styles */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));
+            color: white;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 1025;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Navigation Container */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        /* Dropdown Menu Items */
+        .nav-dropdown-menu {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .nav-dropdown-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-dropdown-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+        }
+        
+        /* Force center alignment for all dropdown menus */
+        .top-nav .nav-dropdown-menu .nav-dropdown-content {
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            right: auto !important;
+        }
+        
+        /* Specific centering for both dropdowns */
+        #main-menu-dropdown,
+        #admin-menu-dropdown {
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            right: auto !important;
+        }
+        
+        .nav-dropdown-content.active {
+            display: block;
+        }
+        
+        .nav-dropdown-content .nav-link {
+            display: block;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dropdown-content .nav-link:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-dropdown-content .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .app-header .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .app-header .user-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .app-header .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Quick Navigation Links */
+        .quick-nav {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .quick-nav .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .quick-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link i {
+            font-size: 16px;
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-success));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover i,
+        .nav-link.active i {
+            -webkit-text-fill-color: white;
+            transform: scale(1.1);
+        }
+        
+        /* Mobile Navigation Toggle */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: auto;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .mobile-nav-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .hamburger-line {
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+        
+        .sidebar-collapse-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .sidebar-collapse-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1019;
+            display: none;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+        
+        .main-content {
+            margin-left: 0;
+            margin-top: 130px;
+            min-height: calc(100vh - 130px - 120px);
+            padding: 20px;
+            padding-bottom: 140px;
+        }
+        
+        /* Footer Styles */
+        .app-footer {
+            background: var(--bs-dark);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: auto;
+            border-top: 1px solid var(--bs-gray-700);
+            position: relative;
+            z-index: 1000;
+            margin-left: 0;
+        }
+        
+        .app-footer h6 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .app-footer .social-links a {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .app-footer .social-links a:hover {
+            color: var(--bs-primary);
+        }
+        
+        .app-footer ul li {
+            margin-bottom: 8px;
+        }
+        
+        .app-footer ul li a:hover {
+            color: var(--bs-primary) !important;
+        }
+        
+        .nav-section {
+            padding: 15px 20px 8px;
+            font-size: 0.75rem;
+            text-uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .nav-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+        
+        .nav-section:first-child {
+            margin-top: 20px;
+        }
+        
+        /* Add some subtle animations */
+        .sidebar .nav-link span {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover span {
+            font-weight: 500;
+        }
+        
+        /* Add a subtle glow effect on hover */
+        .sidebar .nav-link:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 20px rgba(13, 110, 253, 0.1);
+        }
+        
+        /* Improved scrollbar styling */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+
+        
+        /* Mobile Dropdown */
+        .mobile-nav-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mobile-nav-dropdown.active {
+            display: block;
+        }
+        
+        .mobile-nav-dropdown .nav-link {
+            display: block;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-nav-dropdown .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .nav-link span {
+                display: none;
+            }
+            
+            .nav-link {
+                padding: 15px 12px;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .mobile-nav-toggle {
+                display: block;
+            }
+            
+            .quick-nav {
+                display: none;
+            }
+            
+            .nav-dropdown-menu {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .app-header .user-info .username {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 15px;
+                padding-bottom: 120px;
+            }
+            
+            .app-header {
+                padding: 0 15px;
+            }
+            
+            .app-header .brand {
+                font-size: 1.2rem;
+            }
+            
+            .top-nav {
+                padding: 0 10px;
+            }
+            
+            .top-nav .nav-link {
+                padding: 12px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .top-nav .nav-link span {
+                font-size: 0.7rem;
+            }
+            
+            .app-footer {
+                margin-left: 0;
+                padding: 30px 0 15px;
+            }
+        }
+        
+
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <a href="{{ url_for('index') }}" class="brand">
+            <i class="fas fa-coins"></i>
+            {{ app_settings.app_name }}
+        </a>
+        
+        {% if current_user.is_authenticated %}
+        <div class="user-info">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success">
+                    <i class="fas fa-coins"></i> {{ "%.2f"|format(current_user.balance) }}
+                </span>
+                <span class="badge bg-primary">
+                    <i class="fas fa-star"></i> {{ current_user.xp }}
+                </span>
+            </div>
+            <div class="username d-none d-md-block">
+                <small>{{ current_user.username }}</small><br>
+                <small class="text-muted">Level {{ current_user.level }}</small>
+            </div>
+            <img src="{{ current_user.profile_image_url }}" 
+                 alt="Profile" class="user-avatar">
+        </div>
+        {% endif %}
+    </header>
+    
+    <!-- Top Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="quick-nav">
+                <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a class="nav-link" href="{{ url_for('mining.mining_page') }}">
+                    <i class="fas fa-pickaxe"></i>
+                    <span>Mine</span>
+                </a>
+                <a class="nav-link" href="{{ url_for('tasks.tasks_page') }}">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+            </div>
+            
+            <div class="nav-dropdown-menu">
+                <button class="nav-dropdown-btn" id="main-menu-btn">
+                    <i class="fas fa-th-large"></i>
+                    <span>More</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="nav-dropdown-content" id="main-menu-dropdown">
+                    <a class="nav-link" href="{{ url_for('referrals') }}">
+                        <i class="fas fa-users"></i>
+                        <span>Referrals</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('withdrawals') }}">
+                        <i class="fas fa-wallet"></i>
+                        <span>Withdrawals</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('airdrops') }}">
+                        <i class="fas fa-gift"></i>
+                        <span>Airdrops</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile') }}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            
+            {% if current_user.is_admin %}
+            <div class="nav-dropdown-menu">
+                <button class="nav-dropdown-btn" id="admin-menu-btn">
+                    <i class="fas fa-cog"></i>
+                    <span>Admin</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="nav-dropdown-content" id="admin-menu-dropdown">
+                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.users') }}">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Manage Users</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.tasks') }}">
+                        <i class="fas fa-list-check"></i>
+                        <span>Manage Tasks</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.task_completions') }}">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Review Submissions</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.withdrawals') }}">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Manage Withdrawals</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.airdrops') }}">
+                        <i class="fas fa-parachute-box"></i>
+                        <span>Manage Airdrops</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.settings') }}">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.database_management') }}">
+                        <i class="fas fa-database"></i>
+                        <span>Database</span>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-dropdown" id="mobile-nav-dropdown">
+            <a class="nav-link" href="{{ url_for('dashboard') }}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('mining.mining_page') }}">
+                <i class="fas fa-pickaxe"></i>
+                <span>Mine</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('tasks.tasks_page') }}">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('referrals') }}">
+                <i class="fas fa-users"></i>
+                <span>Referrals</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('withdrawals') }}">
+                <i class="fas fa-wallet"></i>
+                <span>Withdrawals</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('airdrops') }}">
+                <i class="fas fa-gift"></i>
+                <span>Airdrops</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('profile') }}">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            
+            {% if current_user.is_admin %}
+            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                <i class="fas fa-chart-line"></i>
+                <span>Admin Dashboard</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('admin.users') }}">
+                <i class="fas fa-users-cog"></i>
+                <span>Manage Users</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('admin.tasks') }}">
+                <i class="fas fa-list-check"></i>
+                <span>Manage Tasks</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('admin.withdrawals') }}">
+                <i class="fas fa-money-check-alt"></i>
+                <span>Manage Withdrawals</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('admin.airdrops') }}">
+                <i class="fas fa-parachute-box"></i>
+                <span>Manage Airdrops</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('admin.settings') }}">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a class="nav-link" href="{{ url_for('admin.database_management') }}">
+                <i class="fas fa-database"></i>
+                <span>Database</span>
+            </a>
+            {% endif %}
+            
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+    {% else %}
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="quick-nav">
+                <a class="nav-link" href="{{ url_for('index') }}">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a class="nav-link" href="{{ url_for('auth.login') }}">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                <a class="nav-link" href="{{ url_for('auth.register') }}">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container text-center py-3">
+            <h6 class="text-primary mb-2">
+                <i class="fas fa-coins me-2"></i>{{ app_settings.app_name }}
+            </h6>
+            <p class="text-muted small mb-2">
+                Earn digital rewards through social engagement
+            </p>
+            <small class="text-muted">
+                &copy; 2025 {{ app_settings.app_name }}. All rights reserved.
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- PWA Registration -->
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+        
+        // Handle PWA install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button if needed
+            const installBtn = document.getElementById('install-btn');
+            if (installBtn) {
+                installBtn.style.display = 'block';
+                installBtn.addEventListener('click', () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                });
+            }
+        });
+    </script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
+    <!-- Navigation JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set active nav link
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Mobile navigation toggle
+            const mobileToggle = document.getElementById('mobile-nav-toggle');
+            const mobileDropdown = document.getElementById('mobile-nav-dropdown');
+            
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    mobileDropdown.classList.toggle('active');
+                });
+            }
+            
+            // Dropdown menu handlers
+            const dropdownBtns = document.querySelectorAll('.nav-dropdown-btn');
+            dropdownBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const dropdown = this.nextElementSibling;
+                    
+                    // Close all other dropdowns
+                    document.querySelectorAll('.nav-dropdown-content').forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-dropdown-menu')) {
+                    document.querySelectorAll('.nav-dropdown-content').forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+                
+                if (!e.target.closest('.mobile-nav-toggle') && !e.target.closest('.mobile-nav-dropdown')) {
+                    if (mobileDropdown) {
+                        mobileDropdown.classList.remove('active');
+                    }
+                }
+            });
+            
+            // Close mobile menu when clicking on links
+            document.querySelectorAll('.mobile-nav-dropdown .nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileDropdown.classList.remove('active');
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

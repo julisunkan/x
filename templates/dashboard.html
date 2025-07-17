@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ app_settings.app_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow card-gradient">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 64px; height: 64px;">
+                            <i class="fas fa-user text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-1">Welcome back, {{ current_user.first_name or current_user.username }}!</h2>
+                            <p class="text-muted mb-0">Ready to mine some coins today?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow h-100 card-gradient">
+                <div class="card-body text-center p-4">
+                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-coins text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Balance</h5>
+                    <h3 class="text-warning mb-2">{{ "%.4f"|format(current_user.balance) }}</h3>
+                    <small class="text-muted">Coins</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow h-100 card-gradient">
+                <div class="card-body text-center p-4">
+                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-star text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Level</h5>
+                    <h3 class="text-info mb-2">{{ current_user.level }}</h3>
+                    <div class="progress mt-2 mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ current_user.xp_progress }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ current_user.xp }} / {{ current_user.xp_for_next_level }} XP</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow h-100 card-gradient">
+                <div class="card-body text-center p-4">
+                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-pickaxe text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Total Mined</h5>
+                    <h3 class="text-success mb-2">{{ "%.4f"|format(total_mined) }}</h3>
+                    <small class="text-muted">All Time</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow h-100 card-gradient">
+                <div class="card-body text-center p-4">
+                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-bolt text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Mining Power</h5>
+                    <h3 class="text-danger mb-2">{{ "%.1f"|format(current_user.mining_power) }}x</h3>
+                    <small class="text-muted">Per Tap</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-rocket me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('mining.mining_page') }}" class="btn mining-button w-100 py-3 text-white">
+                                <i class="fas fa-pickaxe me-2"></i>Start Mining
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('tasks.tasks_page') }}" class="btn btn-success w-100 py-3">
+                                <i class="fas fa-tasks me-2"></i>View Tasks
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('referrals') }}" class="btn btn-info w-100 py-3">
+                                <i class="fas fa-users me-2"></i>Referrals ({{ referral_count }})
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('withdrawals') }}" class="btn btn-warning w-100 py-3">
+                                <i class="fas fa-wallet me-2"></i>Withdraw
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Tasks -->
+            {% if available_tasks %}
+            <div class="card border-0 shadow mt-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tasks me-2"></i>Available Tasks
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for task in available_tasks %}
+                    <div class="d-flex justify-content-between align-items-center py-2 {% if not loop.last %}border-bottom{% endif %}">
+                        <div>
+                            <h6 class="mb-1">{{ task.title }}</h6>
+                            <small class="text-muted">
+                                <i class="fab fa-{{ task.platform }} me-1"></i>{{ task.platform.title() }} • 
+                                <i class="fas fa-coins me-1"></i>{{ task.coin_reward }} coins
+                            </small>
+                        </div>
+                        <a href="{{ url_for('tasks.complete_task', task_id=task.id) }}" class="btn btn-sm btn-outline-primary">
+                            Complete
+                        </a>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('tasks.tasks_page') }}" class="btn btn-outline-secondary">
+                            View All Tasks
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Activity & Stats -->
+        <div class="col-lg-4">
+            <!-- User Stats -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Your Stats
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span><i class="fas fa-check-circle text-success me-2"></i>Tasks Completed</span>
+                        <span class="fw-bold">{{ completed_tasks }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span><i class="fas fa-users text-info me-2"></i>Referrals</span>
+                        <span class="fw-bold">{{ referral_count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span><i class="fas fa-calendar text-warning me-2"></i>Member Since</span>
+                        <span class="fw-bold">{{ current_user.created_at.strftime('%b %Y') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Mining -->
+            {% if recent_mining %}
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Mining
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for session in recent_mining %}
+                    <div class="d-flex justify-content-between align-items-center py-2 {% if not loop.last %}border-bottom{% endif %}">
+                        <div>
+                            <small class="text-muted">{{ session.created_at.strftime('%m/%d %H:%M') }}</small>
+                        </div>
+                        <span class="badge bg-success">
+                            +{{ "%.4f"|format(session.coins_earned) }} coins
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Task Completions -->
+            {% if recent_task_completions %}
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clipboard-check me-2"></i>Recent Task Completions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for completion in recent_task_completions %}
+                    <div class="d-flex justify-content-between align-items-center py-2 {% if not loop.last %}border-bottom{% endif %}">
+                        <div>
+                            <div class="fw-bold">{{ completion.task.title }}</div>
+                            <small class="text-muted">
+                                {% if current_user.is_admin %}
+                                    by {{ completion.user.username }} • 
+                                {% endif %}
+                                {{ completion.submitted_at.strftime('%m/%d %H:%M') }}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            {% if completion.status == 'pending' %}
+                            <span class="badge bg-warning">Pending</span>
+                            {% elif completion.status == 'approved' %}
+                            <span class="badge bg-success">Approved</span>
+                            <br><small class="text-success">+{{ completion.task.coin_reward }} coins</small>
+                            {% elif completion.status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

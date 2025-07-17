@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - RoseCoin Mining Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <h2><i class="fas fa-tasks me-2"></i>Tasks</h2>
+                    <p class="text-muted mb-0">Complete social media tasks to earn bonus RoseCoins and XP!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Tasks -->
+    {% if available_tasks %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star text-warning me-2"></i>Available Tasks
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        {% for task in available_tasks %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card border h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="me-3">
+                                            <i class="fab fa-{{ task.platform }} text-primary" style="font-size: 1.5rem;"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1">{{ task.title }}</h6>
+                                            <small class="text-muted">{{ task.platform.title() }} • {{ task.task_type.title() }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if task.description %}
+                                    <p class="card-text small">{{ task.description[:100] }}{% if task.description|length > 100 %}...{% endif %}</p>
+                                    {% endif %}
+                                    
+                                    <!-- Rewards -->
+                                    <div class="mb-3">
+                                        <span class="badge bg-warning me-2">
+                                            <i class="fas fa-coins me-1"></i>{{ task.coin_reward }} coins
+                                        </span>
+                                        {% if task.xp_reward > 0 %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-star me-1"></i>{{ task.xp_reward }} XP
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Progress -->
+                                    {% if task.max_completions %}
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            {{ task.current_completions }} / {{ task.max_completions }} completed
+                                        </small>
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ (task.current_completions / task.max_completions * 100) }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-grid">
+                                        <a href="{{ url_for('tasks.complete_task', task_id=task.id) }}" 
+                                           class="btn btn-primary">
+                                            <i class="fas fa-play me-1"></i>Start Task
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-tasks text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h4>No Tasks Available</h4>
+                    <p class="text-muted">Check back later for new tasks!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- User's Task History -->
+    {% if user_completions %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Your Task History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Platform</th>
+                                    <th>Reward</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for completion in user_completions %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>{{ completion.task.title }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ completion.task.task_type.title() }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <i class="fab fa-{{ completion.task.platform }} me-1"></i>
+                                        {{ completion.task.platform.title() }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">
+                                            {{ completion.task.coin_reward }} coins
+                                        </span>
+                                        {% if completion.task.xp_reward > 0 %}
+                                        <br>
+                                        <span class="badge bg-info">
+                                            {{ completion.task.xp_reward }} XP
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if completion.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif completion.status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                        {% elif completion.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ completion.submitted_at.strftime('%m/%d/%Y %H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('tasks.view_completion', completion_id=completion.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

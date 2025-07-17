@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Create Airdrop - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-gift me-2"></i>Create New Airdrop</h2>
+                            <p class="text-muted mb-0">Create a new airdrop event for users</p>
+                        </div>
+                        <a href="{{ url_for('admin.airdrops') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Airdrops
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Airdrop Form -->
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <!-- Basic Information -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Airdrop Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                   placeholder="e.g., New Year Celebration Airdrop">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Describe this airdrop event..."></textarea>
+                        </div>
+
+                        <!-- Coin Settings -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="total_coins" class="form-label">Total Coins Budget *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-piggy-bank"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="total_coins" name="total_coins" 
+                                           step="0.0001" min="1" required placeholder="10000.0000">
+                                </div>
+                                <div class="form-text">Total coins allocated for this airdrop</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="coins_per_user" class="form-label">Coins per User *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-coins"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="coins_per_user" name="coins_per_user" 
+                                           step="0.0001" min="0.0001" required placeholder="50.0000">
+                                </div>
+                                <div class="form-text">Coins each participant will receive</div>
+                            </div>
+                        </div>
+
+                        <!-- Participant Limits -->
+                        <div class="mb-3">
+                            <label for="max_participants" class="form-label">Maximum Participants</label>
+                            <input type="number" class="form-control" id="max_participants" name="max_participants" 
+                                   min="1" placeholder="Leave empty for unlimited">
+                            <div class="form-text">Maximum number of users who can participate (calculated automatically based on budget)</div>
+                        </div>
+
+                        <!-- Requirements -->
+                        <h6 class="mt-4 mb-3">Participation Requirements</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="min_level" class="form-label">Minimum Level</label>
+                                <input type="number" class="form-control" id="min_level" name="min_level" 
+                                       min="1" value="1" placeholder="1">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="min_balance" class="form-label">Minimum Balance</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-coins"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="min_balance" name="min_balance" 
+                                           step="0.0001" min="0" value="0" placeholder="0.0000">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="min_referrals" class="form-label">Minimum Referrals</label>
+                                <input type="number" class="form-control" id="min_referrals" name="min_referrals" 
+                                       min="0" value="0" placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- Timing -->
+                        <h6 class="mt-4 mb-3">Airdrop Schedule</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="start_date" class="form-label">Start Date & Time *</label>
+                                <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="end_date" class="form-label">End Date & Time *</label>
+                                <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-eye me-2"></i>Airdrop Preview</h6>
+                            </div>
+                            <div class="card-body">
+                                <h5 id="preview-title">Airdrop Title</h5>
+                                <p class="mb-3" id="preview-description">Airdrop description will appear here...</p>
+                                
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <small class="text-muted">Reward per User</small>
+                                        <div class="fw-bold text-warning">
+                                            <i class="fas fa-coins me-1"></i><span id="preview-coins-per-user">0</span> coins
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Max Participants</small>
+                                        <div class="fw-bold" id="preview-max-participants">Unlimited</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">Requirements:</small>
+                                    <div id="preview-requirements">
+                                        <span class="badge bg-outline-secondary">Level 1+</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <small class="text-muted">Start Date</small>
+                                        <div class="fw-bold" id="preview-start">Not set</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">End Date</small>
+                                        <div class="fw-bold" id="preview-end">Not set</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin.airdrops') }}" class="btn btn-secondary me-md-2">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Airdrop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-calculate max participants based on budget
+function calculateMaxParticipants() {
+    const totalCoins = parseFloat(document.getElementById('total_coins').value) || 0;
+    const coinsPerUser = parseFloat(document.getElementById('coins_per_user').value) || 1;
+    
+    if (totalCoins > 0 && coinsPerUser > 0) {
+        const calculatedMax = Math.floor(totalCoins / coinsPerUser);
+        const maxParticipantsInput = document.getElementById('max_participants');
+        
+        if (!maxParticipantsInput.value) {
+            maxParticipantsInput.placeholder = `Auto: ${calculatedMax} users`;
+        }
+        
+        return calculatedMax;
+    }
+    return null;
+}
+
+// Update preview when form changes
+function updatePreview() {
+    const title = document.getElementById('title').value || 'Airdrop Title';
+    const description = document.getElementById('description').value || 'Airdrop description will appear here...';
+    const coinsPerUser = document.getElementById('coins_per_user').value || '0';
+    const maxParticipants = document.getElementById('max_participants').value;
+    const minLevel = document.getElementById('min_level').value || '1';
+    const minBalance = document.getElementById('min_balance').value || '0';
+    const minReferrals = document.getElementById('min_referrals').value || '0';
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+    
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-description').textContent = description;
+    document.getElementById('preview-coins-per-user').textContent = coinsPerUser;
+    
+    // Max participants
+    const calculatedMax = calculateMaxParticipants();
+    if (maxParticipants) {
+        document.getElementById('preview-max-participants').textContent = maxParticipants;
+    } else if (calculatedMax) {
+        document.getElementById('preview-max-participants').textContent = `${calculatedMax} (auto)`;
+    } else {
+        document.getElementById('preview-max-participants').textContent = 'Unlimited';
+    }
+    
+    // Requirements
+    const requirementsEl = document.getElementById('preview-requirements');
+    let requirements = [];
+    
+    if (parseInt(minLevel) > 1) {
+        requirements.push(`<span class="badge bg-outline-secondary">Level ${minLevel}+</span>`);
+    }
+    if (parseFloat(minBalance) > 0) {
+        requirements.push(`<span class="badge bg-outline-secondary">${minBalance} coins balance</span>`);
+    }
+    if (parseInt(minReferrals) > 0) {
+        requirements.push(`<span class="badge bg-outline-secondary">${minReferrals} referrals</span>`);
+    }
+    
+    if (requirements.length === 0) {
+        requirements.push('<span class="badge bg-outline-secondary">No special requirements</span>');
+    }
+    
+    requirementsEl.innerHTML = requirements.join(' ');
+    
+    // Dates
+    if (startDate) {
+        const startDateObj = new Date(startDate);
+        document.getElementById('preview-start').textContent = startDateObj.toLocaleDateString() + ' ' + startDateObj.toLocaleTimeString();
+    } else {
+        document.getElementById('preview-start').textContent = 'Not set';
+    }
+    
+    if (endDate) {
+        const endDateObj = new Date(endDate);
+        document.getElementById('preview-end').textContent = endDateObj.toLocaleDateString() + ' ' + endDateObj.toLocaleTimeString();
+    } else {
+        document.getElementById('preview-end').textContent = 'Not set';
+    }
+}
+
+// Set default start date to now
+function setDefaultDates() {
+    const now = new Date();
+    const nowString = now.toISOString().slice(0, 16);
+    
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 7);
+    const tomorrowString = tomorrow.toISOString().slice(0, 16);
+    
+    document.getElementById('start_date').value = nowString;
+    document.getElementById('end_date').value = tomorrowString;
+}
+
+// Event listeners
+document.getElementById('title').addEventListener('input', updatePreview);
+document.getElementById('description').addEventListener('input', updatePreview);
+document.getElementById('total_coins').addEventListener('input', () => {
+    calculateMaxParticipants();
+    updatePreview();
+});
+document.getElementById('coins_per_user').addEventListener('input', () => {
+    calculateMaxParticipants();
+    updatePreview();
+});
+document.getElementById('max_participants').addEventListener('input', updatePreview);
+document.getElementById('min_level').addEventListener('input', updatePreview);
+document.getElementById('min_balance').addEventListener('input', updatePreview);
+document.getElementById('min_referrals').addEventListener('input', updatePreview);
+document.getElementById('start_date').addEventListener('change', updatePreview);
+document.getElementById('end_date').addEventListener('change', updatePreview);
+
+// Initialize
+setDefaultDates();
+updatePreview();
+</script>
+{% endblock %}

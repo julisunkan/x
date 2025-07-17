@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Withdrawals - RoseCoin Mining Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-wallet me-2"></i>Withdrawals</h2>
+                            <p class="text-muted mb-0">Request withdrawals of your RoseCoin earnings</p>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Available Balance</small>
+                            <h4 class="text-warning mb-0">
+                                <i class="fas fa-coins me-1"></i>{{ "%.4f"|format(current_user.balance) }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Request Withdrawal -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus me-2"></i>Request Withdrawal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('withdrawals') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-coins"></i>
+                                </span>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.0001" min="0.0001" max="{{ current_user.balance }}" required>
+                            </div>
+                            <div class="form-text">
+                                Minimum: 100.0000 coins<br>
+                                Maximum: {{ "%.4f"|format(current_user.balance) }} coins
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="withdrawal_method" class="form-label">Payment Method</label>
+                            <select class="form-select" id="withdrawal_method" name="withdrawal_method" required>
+                                <option value="">Select method...</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="bank">Bank Transfer</option>
+                                <option value="crypto">Cryptocurrency</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="payment_address" class="form-label">Payment Address/Email</label>
+                            <input type="text" class="form-control" id="payment_address" name="payment_address" 
+                                   placeholder="Enter your payment details..." required>
+                            <div class="form-text">
+                                PayPal: your PayPal email<br>
+                                Bank: account details<br>
+                                Crypto: wallet address
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="payment_details" class="form-label">Additional Details (Optional)</label>
+                            <textarea class="form-control" id="payment_details" name="payment_details" rows="3"
+                                      placeholder="Additional payment information..."></textarea>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>
+                                <strong>Processing:</strong> Withdrawals are typically processed within 24-48 hours.
+                                A 2% fee applies to all withdrawals.
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Request Withdrawal
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawal History -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Withdrawal History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if withdrawals %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Requested</th>
+                                    <th>Processed</th>
+                                    <th>Transaction ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for withdrawal in withdrawals %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-warning">
+                                            <i class="fas fa-coins me-1"></i>{{ "%.4f"|format(withdrawal.amount) }}
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        {% if withdrawal.withdrawal_method == 'paypal' %}
+                                        <i class="fab fa-paypal me-1"></i>PayPal
+                                        {% elif withdrawal.withdrawal_method == 'bank' %}
+                                        <i class="fas fa-university me-1"></i>Bank Transfer
+                                        {% elif withdrawal.withdrawal_method == 'crypto' %}
+                                        <i class="fab fa-bitcoin me-1"></i>Crypto
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if withdrawal.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif withdrawal.status == 'approved' %}
+                                        <span class="badge bg-info">Approved</span>
+                                        {% elif withdrawal.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {% elif withdrawal.status == 'paid' %}
+                                        <span class="badge bg-success">Paid</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ withdrawal.requested_at.strftime('%m/%d/%Y %H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        {% if withdrawal.processed_at %}
+                                        <small>{{ withdrawal.processed_at.strftime('%m/%d/%Y %H:%M') }}</small>
+                                        {% else %}
+                                        <small class="text-muted">-</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if withdrawal.transaction_id %}
+                                        <small class="font-monospace">{{ withdrawal.transaction_id[:10] }}...</small>
+                                        {% else %}
+                                        <small class="text-muted">-</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if withdrawal.admin_notes %}
+                                <tr>
+                                    <td colspan="6">
+                                        <small class="text-muted">
+                                            <i class="fas fa-comment me-1"></i>
+                                            Admin Note: {{ withdrawal.admin_notes }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-wallet text-muted mb-3" style="font-size: 3rem;"></i>
+                        <h5>No Withdrawals Yet</h5>
+                        <p class="text-muted">Your withdrawal requests will appear here.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update payment address placeholder based on selected method
+document.getElementById('withdrawal_method').addEventListener('change', function() {
+    const method = this.value;
+    const addressInput = document.getElementById('payment_address');
+    
+    switch(method) {
+        case 'paypal':
+            addressInput.placeholder = 'your-email@example.com';
+            break;
+        case 'bank':
+            addressInput.placeholder = 'Bank account details...';
+            break;
+        case 'crypto':
+            addressInput.placeholder = 'Wallet address (BTC, ETH, etc.)';
+            break;
+        default:
+            addressInput.placeholder = 'Enter your payment details...';
+    }
+});
+</script>
+{% endblock %}

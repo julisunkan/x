@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Create Task - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-plus me-2"></i>Create New Task</h2>
+                            <p class="text-muted mb-0">Create a new task for users to complete</p>
+                        </div>
+                        <a href="{{ url_for('admin.tasks') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Tasks
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Task Form -->
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <!-- Basic Information -->
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="title" class="form-label">Task Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" required
+                                       placeholder="e.g., Follow our Twitter account">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="task_type" class="form-label">Task Type *</label>
+                                <select class="form-select" id="task_type" name="task_type" required>
+                                    <option value="">Select type...</option>
+                                    <option value="follow">Follow</option>
+                                    <option value="like">Like</option>
+                                    <option value="share">Share</option>
+                                    <option value="subscribe">Subscribe</option>
+                                    <option value="comment">Comment</option>
+                                    <option value="join">Join</option>
+                                    <option value="visit">Visit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Describe what users need to do..."></textarea>
+                        </div>
+
+                        <!-- Platform and URL -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="platform" class="form-label">Platform *</label>
+                                <select class="form-select" id="platform" name="platform" required>
+                                    <option value="">Select platform...</option>
+                                    <option value="twitter">Twitter</option>
+                                    <option value="telegram">Telegram</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="discord">Discord</option>
+                                    <option value="tiktok">TikTok</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="url" class="form-label">Task URL *</label>
+                                <input type="url" class="form-control" id="url" name="url" required
+                                       placeholder="https://twitter.com/yourprofile">
+                            </div>
+                        </div>
+
+                        <!-- Rewards -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="coin_reward" class="form-label">Coin Reward *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-coins"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="coin_reward" name="coin_reward" 
+                                           step="0.0001" min="0.0001" required placeholder="10.0000">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="xp_reward" class="form-label">XP Reward</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-star"></i>
+                                    </span>
+                                    <input type="number" class="form-control" id="xp_reward" name="xp_reward" 
+                                           min="0" placeholder="5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Limits and Settings -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="max_completions" class="form-label">Max Completions</label>
+                                <input type="number" class="form-control" id="max_completions" name="max_completions" 
+                                       min="1" placeholder="Leave empty for unlimited">
+                                <div class="form-text">Maximum number of users who can complete this task</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Task Settings</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="requires_proof" name="requires_proof" checked>
+                                    <label class="form-check-label" for="requires_proof">
+                                        Requires Proof
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="requires_admin_approval" name="requires_admin_approval" checked>
+                                    <label class="form-check-label" for="requires_admin_approval">
+                                        Requires Admin Approval
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Proof Instructions -->
+                        <div class="mb-4" id="proof_instructions_section">
+                            <label for="proof_instructions" class="form-label">Proof Instructions</label>
+                            <textarea class="form-control" id="proof_instructions" name="proof_instructions" rows="3"
+                                      placeholder="Tell users what proof they should provide (e.g., screenshot of follow button)"></textarea>
+                            <div class="form-text">Instructions for users on what proof to submit</div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-eye me-2"></i>Task Preview</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-start mb-2">
+                                    <i class="fab fa-twitter text-primary me-2" style="font-size: 1.5rem;" id="preview-platform-icon"></i>
+                                    <div>
+                                        <h6 class="mb-0" id="preview-title">Task Title</h6>
+                                        <small class="text-muted"><span id="preview-platform">Platform</span> • <span id="preview-type">Type</span></small>
+                                    </div>
+                                </div>
+                                <p class="mb-2" id="preview-description">Task description will appear here...</p>
+                                <div>
+                                    <span class="badge bg-warning me-2">
+                                        <i class="fas fa-coins me-1"></i><span id="preview-coins">0</span> coins
+                                    </span>
+                                    <span class="badge bg-info" id="preview-xp-badge" style="display: none;">
+                                        <i class="fas fa-star me-1"></i><span id="preview-xp">0</span> XP
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin.tasks') }}" class="btn btn-secondary me-md-2">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Platform icons mapping
+const platformIcons = {
+    'twitter': 'fab fa-twitter',
+    'telegram': 'fab fa-telegram',
+    'youtube': 'fab fa-youtube',
+    'instagram': 'fab fa-instagram',
+    'facebook': 'fab fa-facebook',
+    'discord': 'fab fa-discord',
+    'tiktok': 'fab fa-tiktok'
+};
+
+// Update preview when form changes
+function updatePreview() {
+    const title = document.getElementById('title').value || 'Task Title';
+    const description = document.getElementById('description').value || 'Task description will appear here...';
+    const platform = document.getElementById('platform').value || 'platform';
+    const taskType = document.getElementById('task_type').value || 'type';
+    const coinReward = document.getElementById('coin_reward').value || '0';
+    const xpReward = document.getElementById('xp_reward').value || '0';
+    
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-description').textContent = description;
+    document.getElementById('preview-platform').textContent = platform.charAt(0).toUpperCase() + platform.slice(1);
+    document.getElementById('preview-type').textContent = taskType.charAt(0).toUpperCase() + taskType.slice(1);
+    document.getElementById('preview-coins').textContent = coinReward;
+    
+    // Update platform icon
+    const iconElement = document.getElementById('preview-platform-icon');
+    if (platformIcons[platform]) {
+        iconElement.className = platformIcons[platform] + ' text-primary me-2';
+        iconElement.style.fontSize = '1.5rem';
+    }
+    
+    // Update XP badge
+    const xpBadge = document.getElementById('preview-xp-badge');
+    if (xpReward && xpReward > 0) {
+        document.getElementById('preview-xp').textContent = xpReward;
+        xpBadge.style.display = 'inline';
+    } else {
+        xpBadge.style.display = 'none';
+    }
+}
+
+// Toggle proof instructions section
+function toggleProofInstructions() {
+    const requiresProof = document.getElementById('requires_proof').checked;
+    const section = document.getElementById('proof_instructions_section');
+    section.style.display = requiresProof ? 'block' : 'none';
+}
+
+// Event listeners
+document.getElementById('title').addEventListener('input', updatePreview);
+document.getElementById('description').addEventListener('input', updatePreview);
+document.getElementById('platform').addEventListener('change', updatePreview);
+document.getElementById('task_type').addEventListener('change', updatePreview);
+document.getElementById('coin_reward').addEventListener('input', updatePreview);
+document.getElementById('xp_reward').addEventListener('input', updatePreview);
+document.getElementById('requires_proof').addEventListener('change', toggleProofInstructions);
+
+// Initialize
+updatePreview();
+toggleProofInstructions();
+</script>
+{% endblock %}

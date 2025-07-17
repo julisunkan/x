@@ -1,0 +1,429 @@
+{
+  "airdrop": {
+    "columns": [
+      "id",
+      "title",
+      "description",
+      "total_coins",
+      "coins_per_user",
+      "max_participants",
+      "current_participants",
+      "min_level",
+      "min_balance",
+      "min_referrals",
+      "requires_task_completion",
+      "required_task_id",
+      "start_date",
+      "end_date",
+      "distribution_date",
+      "is_active",
+      "is_distributed",
+      "created_by",
+      "created_at"
+    ],
+    "data": []
+  },
+  "airdrop_participation": {
+    "columns": [
+      "id",
+      "user_id",
+      "airdrop_id",
+      "participated_at",
+      "coins_received",
+      "is_distributed",
+      "distributed_at"
+    ],
+    "data": []
+  },
+  "airdrop_template": {
+    "columns": [
+      "id",
+      "name",
+      "description",
+      "default_coins_per_user",
+      "default_max_participants",
+      "default_min_level",
+      "default_duration_days",
+      "is_active",
+      "created_by",
+      "created_at"
+    ],
+    "data": []
+  },
+  "app_settings": {
+    "columns": [
+      "id",
+      "app_name",
+      "app_description",
+      "app_logo",
+      "primary_color",
+      "secondary_color",
+      "success_color",
+      "warning_color",
+      "danger_color",
+      "smtp_server",
+      "smtp_port",
+      "smtp_username",
+      "smtp_password",
+      "smtp_use_tls",
+      "smtp_from_email",
+      "smtp_from_name",
+      "contact_email",
+      "support_email",
+      "twitter_url",
+      "telegram_url",
+      "discord_url",
+      "maintenance_mode",
+      "maintenance_message",
+      "max_upload_size",
+      "session_timeout",
+      "updated_by",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "app_name": "RoseCoin Mining Platform",
+        "app_description": "A gamified cryptocurrency mining platform",
+        "app_logo": null,
+        "primary_color": "#0d6efd",
+        "secondary_color": "#6c757d",
+        "success_color": "#198754",
+        "warning_color": "#ffc107",
+        "danger_color": "#dc3545",
+        "smtp_server": null,
+        "smtp_port": 587,
+        "smtp_username": null,
+        "smtp_password": null,
+        "smtp_use_tls": 1,
+        "smtp_from_email": null,
+        "smtp_from_name": null,
+        "contact_email": null,
+        "support_email": null,
+        "twitter_url": null,
+        "telegram_url": null,
+        "discord_url": null,
+        "maintenance_mode": 0,
+        "maintenance_message": null,
+        "max_upload_size": 5,
+        "session_timeout": 30,
+        "updated_by": null,
+        "updated_at": "2025-07-16 12:26:56.880636"
+      }
+    ]
+  },
+  "daily_mission": {
+    "columns": [
+      "id",
+      "name",
+      "description",
+      "mission_type",
+      "target_amount",
+      "coin_reward",
+      "xp_reward",
+      "is_active",
+      "created_at"
+    ],
+    "data": []
+  },
+  "daily_mission_completion": {
+    "columns": [
+      "id",
+      "user_id",
+      "mission_id",
+      "completed_at",
+      "progress",
+      "is_completed",
+      "rewards_claimed"
+    ],
+    "data": []
+  },
+  "database_backup": {
+    "columns": [
+      "id",
+      "filename",
+      "file_size",
+      "backup_type",
+      "tables_count",
+      "records_count",
+      "status",
+      "error_message",
+      "created_by",
+      "created_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "filename": "backup_20250716_123102.json",
+        "file_size": null,
+        "backup_type": "manual",
+        "tables_count": null,
+        "records_count": null,
+        "status": "in_progress",
+        "error_message": null,
+        "created_by": 1,
+        "created_at": "2025-07-16 12:31:02.244954"
+      }
+    ]
+  },
+  "mining_event": {
+    "columns": [
+      "id",
+      "name",
+      "description",
+      "multiplier",
+      "bonus_coins",
+      "bonus_xp",
+      "start_time",
+      "end_time",
+      "is_active",
+      "created_by",
+      "created_at"
+    ],
+    "data": []
+  },
+  "mining_session": {
+    "columns": [
+      "id",
+      "user_id",
+      "clicks",
+      "coins_earned",
+      "xp_earned",
+      "session_duration",
+      "ip_address",
+      "user_agent",
+      "created_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "clicks": 1,
+        "coins_earned": 0.9768,
+        "xp_earned": 1,
+        "session_duration": null,
+        "ip_address": "102.89.82.131",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+        "created_at": "2025-07-16 12:29:52.620021"
+      }
+    ]
+  },
+  "referral": {
+    "columns": [
+      "id",
+      "referrer_id",
+      "referred_id",
+      "referral_code",
+      "earnings",
+      "is_active",
+      "created_at"
+    ],
+    "data": []
+  },
+  "referral_earning": {
+    "columns": [
+      "id",
+      "referral_id",
+      "amount",
+      "earning_type",
+      "description",
+      "related_mining_session_id",
+      "related_task_completion_id",
+      "created_at"
+    ],
+    "data": []
+  },
+  "referral_settings": {
+    "columns": [
+      "id",
+      "signup_bonus",
+      "mining_commission",
+      "task_commission",
+      "max_referrals_per_user",
+      "min_withdrawal_amount",
+      "is_active",
+      "updated_by",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "signup_bonus": 10.0,
+        "mining_commission": 5.0,
+        "task_commission": 10.0,
+        "max_referrals_per_user": null,
+        "min_withdrawal_amount": 100.0,
+        "is_active": 1,
+        "updated_by": null,
+        "updated_at": "2025-07-16 12:27:49.676338"
+      }
+    ]
+  },
+  "task": {
+    "columns": [
+      "id",
+      "title",
+      "description",
+      "task_type",
+      "platform",
+      "url",
+      "requires_proof",
+      "proof_instructions",
+      "coin_reward",
+      "xp_reward",
+      "max_completions",
+      "current_completions",
+      "is_active",
+      "requires_admin_approval",
+      "created_by",
+      "created_at",
+      "updated_at"
+    ],
+    "data": []
+  },
+  "task_completion": {
+    "columns": [
+      "id",
+      "user_id",
+      "task_id",
+      "proof_text",
+      "proof_image_url",
+      "proof_file_path",
+      "status",
+      "ai_verification_score",
+      "ai_verification_notes",
+      "reviewed_by",
+      "reviewed_at",
+      "review_notes",
+      "submitted_at",
+      "completed_at"
+    ],
+    "data": []
+  },
+  "user": {
+    "columns": [
+      "id",
+      "username",
+      "email",
+      "password_hash",
+      "first_name",
+      "last_name",
+      "balance",
+      "xp",
+      "level",
+      "mining_power",
+      "is_active",
+      "is_admin",
+      "email_verified",
+      "created_at",
+      "last_login",
+      "last_mining",
+      "daily_mission_date",
+      "daily_missions_completed",
+      "referral_code",
+      "referred_by",
+      "wallet_address",
+      "wallet_type",
+      "profile_image"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "username": "admin",
+        "email": "admin@rosecoin.com",
+        "password_hash": "scrypt:32768:8:1$wiFYnM6m6fpccQkH$baf3aaf82c490e417ed964f055f9fb42f73399f38b092fc44696b3a7bcac075aa1d4517b0f4fb80c2044039b410a5e13adb6518a4ad844a088db630965cd9172",
+        "first_name": "Olasunkanmide",
+        "last_name": "Agbajelolade",
+        "balance": 1000000.9768,
+        "xp": 10001,
+        "level": 11,
+        "mining_power": 1.1,
+        "is_active": 1,
+        "is_admin": 1,
+        "email_verified": 0,
+        "created_at": "2025-07-16 12:26:56.848734",
+        "last_login": null,
+        "last_mining": "2025-07-16 12:29:52.616765",
+        "daily_mission_date": null,
+        "daily_missions_completed": 0,
+        "referral_code": "XHS6NID9",
+        "referred_by": null,
+        "wallet_address": null,
+        "wallet_type": null,
+        "profile_image": "15a361fa-992c-4ac0-ad5a-5f210d1147ec_newplot_1.png"
+      }
+    ]
+  },
+  "withdrawal": {
+    "columns": [
+      "id",
+      "user_id",
+      "amount",
+      "withdrawal_method",
+      "payment_address",
+      "payment_details",
+      "status",
+      "reviewed_by",
+      "reviewed_at",
+      "admin_notes",
+      "transaction_id",
+      "transaction_hash",
+      "requested_at",
+      "processed_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "amount": 4355.0,
+        "withdrawal_method": "bank",
+        "payment_address": "ceo@digitalskeleton.com.ng",
+        "payment_details": "",
+        "status": "pending",
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "admin_notes": null,
+        "transaction_id": null,
+        "transaction_hash": null,
+        "requested_at": "2025-07-16 12:29:37.733790",
+        "processed_at": null
+      }
+    ]
+  },
+  "withdrawal_settings": {
+    "columns": [
+      "id",
+      "min_withdrawal_amount",
+      "max_withdrawal_amount",
+      "daily_withdrawal_limit",
+      "withdrawal_fee_percentage",
+      "withdrawal_fee_fixed",
+      "auto_approval_threshold",
+      "processing_time_hours",
+      "withdrawals_enabled",
+      "paypal_enabled",
+      "bank_transfer_enabled",
+      "crypto_enabled",
+      "updated_by",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "min_withdrawal_amount": 100.0,
+        "max_withdrawal_amount": 10000.0,
+        "daily_withdrawal_limit": 1000.0,
+        "withdrawal_fee_percentage": 2.0,
+        "withdrawal_fee_fixed": 1.0,
+        "auto_approval_threshold": 50.0,
+        "processing_time_hours": 24,
+        "withdrawals_enabled": 1,
+        "paypal_enabled": 1,
+        "bank_transfer_enabled": 1,
+        "crypto_enabled": 0,
+        "updated_by": null,
+        "updated_at": "2025-07-16 12:27:49.610230"
+      }
+    ]
+  }
+}
