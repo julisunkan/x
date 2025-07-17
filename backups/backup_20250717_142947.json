@@ -1,0 +1,590 @@
+{
+  "airdrop": {
+    "columns": [
+      "id",
+      "title",
+      "description",
+      "total_coins",
+      "coins_per_user",
+      "max_participants",
+      "current_participants",
+      "min_level",
+      "min_balance",
+      "min_referrals",
+      "requires_task_completion",
+      "required_task_id",
+      "start_date",
+      "end_date",
+      "distribution_date",
+      "is_active",
+      "is_distributed",
+      "created_by",
+      "created_at"
+    ],
+    "data": []
+  },
+  "airdrop_participation": {
+    "columns": [
+      "id",
+      "user_id",
+      "airdrop_id",
+      "participated_at",
+      "coins_received",
+      "is_distributed",
+      "distributed_at"
+    ],
+    "data": []
+  },
+  "airdrop_template": {
+    "columns": [
+      "id",
+      "name",
+      "description",
+      "default_coins_per_user",
+      "default_max_participants",
+      "default_min_level",
+      "default_duration_days",
+      "is_active",
+      "created_by",
+      "created_at"
+    ],
+    "data": []
+  },
+  "app_settings": {
+    "columns": [
+      "id",
+      "app_name",
+      "app_description",
+      "app_logo",
+      "primary_color",
+      "secondary_color",
+      "success_color",
+      "warning_color",
+      "danger_color",
+      "smtp_server",
+      "smtp_port",
+      "smtp_username",
+      "smtp_password",
+      "smtp_use_tls",
+      "smtp_from_email",
+      "smtp_from_name",
+      "contact_email",
+      "support_email",
+      "twitter_url",
+      "telegram_url",
+      "discord_url",
+      "maintenance_mode",
+      "maintenance_message",
+      "max_upload_size",
+      "session_timeout",
+      "updated_by",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "app_name": "RoseCoin Mining Platform",
+        "app_description": "A gamified cryptocurrency mining platform",
+        "app_logo": null,
+        "primary_color": "#0d6efd",
+        "secondary_color": "#6c757d",
+        "success_color": "#198754",
+        "warning_color": "#ffc107",
+        "danger_color": "#dc3545",
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "smtp_username": "julisunkan@gmail.com",
+        "smtp_password": "djcryoexqbogvnmu",
+        "smtp_use_tls": 1,
+        "smtp_from_email": "julisunkan@gmail.com",
+        "smtp_from_name": "DigitalSkeleton",
+        "contact_email": null,
+        "support_email": null,
+        "twitter_url": null,
+        "telegram_url": null,
+        "discord_url": null,
+        "maintenance_mode": 0,
+        "maintenance_message": null,
+        "max_upload_size": 5,
+        "session_timeout": 30,
+        "updated_by": 1,
+        "updated_at": "2025-07-17 14:13:12.184958"
+      }
+    ]
+  },
+  "daily_mission": {
+    "columns": [
+      "id",
+      "name",
+      "description",
+      "mission_type",
+      "target_amount",
+      "coin_reward",
+      "xp_reward",
+      "is_active",
+      "created_at"
+    ],
+    "data": []
+  },
+  "daily_mission_completion": {
+    "columns": [
+      "id",
+      "user_id",
+      "mission_id",
+      "completed_at",
+      "progress",
+      "is_completed",
+      "rewards_claimed"
+    ],
+    "data": []
+  },
+  "database_backup": {
+    "columns": [
+      "id",
+      "filename",
+      "file_size",
+      "backup_type",
+      "tables_count",
+      "records_count",
+      "status",
+      "error_message",
+      "created_by",
+      "created_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "filename": "backup_20250717_142947.json",
+        "file_size": null,
+        "backup_type": "manual",
+        "tables_count": null,
+        "records_count": null,
+        "status": "in_progress",
+        "error_message": null,
+        "created_by": 1,
+        "created_at": "2025-07-17 14:29:47.850926"
+      }
+    ]
+  },
+  "mining_event": {
+    "columns": [
+      "id",
+      "name",
+      "description",
+      "multiplier",
+      "bonus_coins",
+      "bonus_xp",
+      "start_time",
+      "end_time",
+      "is_active",
+      "created_by",
+      "created_at"
+    ],
+    "data": []
+  },
+  "mining_session": {
+    "columns": [
+      "id",
+      "user_id",
+      "clicks",
+      "coins_earned",
+      "xp_earned",
+      "session_duration",
+      "ip_address",
+      "user_agent",
+      "created_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "clicks": 1,
+        "coins_earned": 1.1596,
+        "xp_earned": 1,
+        "session_duration": null,
+        "ip_address": "102.89.82.13",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+        "created_at": "2025-07-17 14:24:54.840964"
+      },
+      {
+        "id": 2,
+        "user_id": 2,
+        "clicks": 1,
+        "coins_earned": 1.0215,
+        "xp_earned": 1,
+        "session_duration": null,
+        "ip_address": "102.89.82.13",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+        "created_at": "2025-07-17 14:27:13.418602"
+      },
+      {
+        "id": 3,
+        "user_id": 2,
+        "clicks": 1,
+        "coins_earned": 1.0253,
+        "xp_earned": 1,
+        "session_duration": null,
+        "ip_address": "102.89.82.13",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+        "created_at": "2025-07-17 14:27:14.889043"
+      }
+    ]
+  },
+  "referral": {
+    "columns": [
+      "id",
+      "referrer_id",
+      "referred_id",
+      "referral_code",
+      "earnings",
+      "is_active",
+      "created_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "referrer_id": 1,
+        "referred_id": 2,
+        "referral_code": "KCQE9JDZ",
+        "earnings": 10.102340000000002,
+        "is_active": 1,
+        "created_at": "2025-07-17 14:26:25.985507"
+      }
+    ]
+  },
+  "referral_earning": {
+    "columns": [
+      "id",
+      "referral_id",
+      "amount",
+      "earning_type",
+      "description",
+      "related_mining_session_id",
+      "related_task_completion_id",
+      "created_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "referral_id": 1,
+        "amount": 0.05107500000000001,
+        "earning_type": "mining",
+        "description": "Mining commission from julisunkan",
+        "related_mining_session_id": 2,
+        "related_task_completion_id": null,
+        "created_at": "2025-07-17 14:27:13.423647"
+      },
+      {
+        "id": 2,
+        "referral_id": 1,
+        "amount": 0.051265000000000005,
+        "earning_type": "mining",
+        "description": "Mining commission from julisunkan",
+        "related_mining_session_id": 3,
+        "related_task_completion_id": null,
+        "created_at": "2025-07-17 14:27:14.891508"
+      }
+    ]
+  },
+  "referral_settings": {
+    "columns": [
+      "id",
+      "signup_bonus",
+      "mining_commission",
+      "task_commission",
+      "max_referrals_per_user",
+      "min_withdrawal_amount",
+      "is_active",
+      "updated_by",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "signup_bonus": 10.0,
+        "mining_commission": 5.0,
+        "task_commission": 10.0,
+        "max_referrals_per_user": null,
+        "min_withdrawal_amount": 100.0,
+        "is_active": 1,
+        "updated_by": null,
+        "updated_at": "2025-07-16 15:04:34.726620"
+      }
+    ]
+  },
+  "task": {
+    "columns": [
+      "id",
+      "title",
+      "description",
+      "task_type",
+      "platform",
+      "url",
+      "requires_proof",
+      "proof_instructions",
+      "coin_reward",
+      "xp_reward",
+      "max_completions",
+      "current_completions",
+      "is_active",
+      "requires_admin_approval",
+      "created_by",
+      "created_at",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "title": "Job Listing and Employment Tracking Portal",
+        "description": "tdhfhfujfhv",
+        "task_type": "follow",
+        "platform": "facebook",
+        "url": "https://julisunkan.github.io/awpt/1.html",
+        "requires_proof": 1,
+        "proof_instructions": "n  mm",
+        "coin_reward": 10.0,
+        "xp_reward": 2,
+        "max_completions": 1,
+        "current_completions": 2,
+        "is_active": 1,
+        "requires_admin_approval": 1,
+        "created_by": 1,
+        "created_at": "2025-07-16 14:49:27.872398",
+        "updated_at": "2025-07-16 15:01:21.859437"
+      },
+      {
+        "id": 2,
+        "title": "Job Listing and Employment Tracking Portal",
+        "description": "jbbmkbn",
+        "task_type": "like",
+        "platform": "twitter",
+        "url": "https://nairaland.com",
+        "requires_proof": 1,
+        "proof_instructions": " jknlk",
+        "coin_reward": 12.0,
+        "xp_reward": 0,
+        "max_completions": 1,
+        "current_completions": 0,
+        "is_active": 1,
+        "requires_admin_approval": 1,
+        "created_by": 1,
+        "created_at": "2025-07-16 14:55:01.414155",
+        "updated_at": "2025-07-16 14:55:01.414157"
+      }
+    ]
+  },
+  "task_completion": {
+    "columns": [
+      "id",
+      "user_id",
+      "task_id",
+      "proof_text",
+      "proof_image_url",
+      "proof_file_path",
+      "status",
+      "ai_verification_score",
+      "ai_verification_notes",
+      "reviewed_by",
+      "reviewed_at",
+      "review_notes",
+      "submitted_at",
+      "completed_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "task_id": 1,
+        "proof_text": "hfgiukgiu",
+        "proof_image_url": null,
+        "proof_file_path": "task_proofs/newplot_2e3deeef.png",
+        "status": "approved",
+        "ai_verification_score": 0.3946149223258115,
+        "ai_verification_notes": "AI Verification Complete. Overall confidence: 0.39\nText analysis score: 0.20\nImage analysis score: 0.60\nPlatform verification score: 0.60",
+        "reviewed_by": null,
+        "reviewed_at": "2025-07-16 14:59:59.421130",
+        "review_notes": null,
+        "submitted_at": "2025-07-16 14:49:55.391528",
+        "completed_at": "2025-07-16 14:59:59.421138"
+      },
+      {
+        "id": 3,
+        "user_id": 1,
+        "task_id": 2,
+        "proof_text": "fffffff",
+        "proof_image_url": null,
+        "proof_file_path": "task_proofs/newplot_d9e6cd9e.png",
+        "status": "rejected",
+        "ai_verification_score": 0.551823570269413,
+        "ai_verification_notes": "AI Verification Complete. Overall confidence: 0.55\nText analysis score: 0.20\nImage analysis score: 0.75\nPlatform verification score: 0.63",
+        "reviewed_by": "",
+        "reviewed_at": "2025-07-16 15:00:07.073221",
+        "review_notes": null,
+        "submitted_at": "2025-07-16 14:55:25.623372",
+        "completed_at": null
+      },
+      {
+        "id": 4,
+        "user_id": 2,
+        "task_id": 2,
+        "proof_text": "ggghhghg",
+        "proof_image_url": null,
+        "proof_file_path": "task_proofs/aman_06c0b0ef.jpg",
+        "status": "pending",
+        "ai_verification_score": 0.3849237764537736,
+        "ai_verification_notes": "AI Verification Complete. Overall confidence: 0.38\nText analysis score: 0.20\nImage analysis score: 0.51\nPlatform verification score: 0.74",
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "review_notes": null,
+        "submitted_at": "2025-07-17 14:27:43.580929",
+        "completed_at": null
+      }
+    ]
+  },
+  "user": {
+    "columns": [
+      "id",
+      "username",
+      "email",
+      "password_hash",
+      "first_name",
+      "last_name",
+      "balance",
+      "xp",
+      "level",
+      "mining_power",
+      "is_active",
+      "is_admin",
+      "email_verified",
+      "email_verification_token",
+      "email_verification_expires",
+      "password_reset_token",
+      "password_reset_expires",
+      "created_at",
+      "last_login",
+      "last_mining",
+      "daily_mission_date",
+      "daily_missions_completed",
+      "referral_code",
+      "referred_by",
+      "wallet_address",
+      "wallet_type",
+      "profile_image"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "username": "admin",
+        "email": "admin@rosecoin.com",
+        "password_hash": "scrypt:32768:8:1$1FsE3rx7KP1gKr6m$19a09af9f8ae04b7590a9d32051519f85ca71fb3b7342ead44db7c80b14f696b9d860eb2bf9c1f35700518e3c10f9cde008b6331ec77784e8ace3592075b222d",
+        "first_name": null,
+        "last_name": null,
+        "balance": 1000021.26194,
+        "xp": 10003,
+        "level": 11,
+        "mining_power": 1.1,
+        "is_active": 1,
+        "is_admin": 1,
+        "email_verified": 1,
+        "email_verification_token": null,
+        "email_verification_expires": null,
+        "password_reset_token": null,
+        "password_reset_expires": null,
+        "created_at": "2025-07-16 14:48:02.809351",
+        "last_login": "2025-07-17 14:28:59.198244",
+        "last_mining": "2025-07-17 14:24:54.835380",
+        "daily_mission_date": null,
+        "daily_missions_completed": 0,
+        "referral_code": "KCQE9JDZ",
+        "referred_by": null,
+        "wallet_address": null,
+        "wallet_type": null,
+        "profile_image": "default-avatar-2.svg"
+      },
+      {
+        "id": 2,
+        "username": "julisunkan",
+        "email": "julisunkan@live.com",
+        "password_hash": "scrypt:32768:8:1$JEr3MoBEz4ELKMJH$8110021b3693f30e5f6a50c7c2076678326c0fb7758d5a49507d96c5dedb5f5d91fc4bcd15fed3cc14038af26352c98893e5a06efebf080c93c8142927e3c7ca",
+        "first_name": "Agbajelola",
+        "last_name": "Julius",
+        "balance": 102.0468,
+        "xp": 2,
+        "level": 1,
+        "mining_power": 1.0,
+        "is_active": 1,
+        "is_admin": 0,
+        "email_verified": 1,
+        "email_verification_token": null,
+        "email_verification_expires": null,
+        "password_reset_token": null,
+        "password_reset_expires": null,
+        "created_at": "2025-07-17 14:26:25.920402",
+        "last_login": "2025-07-17 14:27:00.650311",
+        "last_mining": "2025-07-17 14:27:14.887947",
+        "daily_mission_date": null,
+        "daily_missions_completed": 0,
+        "referral_code": "G2F8A3G7",
+        "referred_by": 1,
+        "wallet_address": null,
+        "wallet_type": null,
+        "profile_image": "e170426c-348d-4b6e-bdce-78b7fcac9b14_aman-removebg-preview.png"
+      }
+    ]
+  },
+  "withdrawal": {
+    "columns": [
+      "id",
+      "user_id",
+      "amount",
+      "withdrawal_method",
+      "payment_address",
+      "payment_details",
+      "status",
+      "reviewed_by",
+      "reviewed_at",
+      "admin_notes",
+      "transaction_id",
+      "transaction_hash",
+      "requested_at",
+      "processed_at"
+    ],
+    "data": []
+  },
+  "withdrawal_settings": {
+    "columns": [
+      "id",
+      "min_withdrawal_amount",
+      "max_withdrawal_amount",
+      "daily_withdrawal_limit",
+      "withdrawal_fee_percentage",
+      "withdrawal_fee_fixed",
+      "auto_approval_threshold",
+      "processing_time_hours",
+      "withdrawals_enabled",
+      "paypal_enabled",
+      "bank_transfer_enabled",
+      "crypto_enabled",
+      "updated_by",
+      "updated_at"
+    ],
+    "data": [
+      {
+        "id": 1,
+        "min_withdrawal_amount": 100.0,
+        "max_withdrawal_amount": 10000.0,
+        "daily_withdrawal_limit": 1000.0,
+        "withdrawal_fee_percentage": 2.0,
+        "withdrawal_fee_fixed": 1.0,
+        "auto_approval_threshold": 50.0,
+        "processing_time_hours": 24,
+        "withdrawals_enabled": 1,
+        "paypal_enabled": 1,
+        "bank_transfer_enabled": 1,
+        "crypto_enabled": 0,
+        "updated_by": null,
+        "updated_at": "2025-07-16 15:10:00.357329"
+      }
+    ]
+  }
+}
