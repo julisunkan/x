@@ -835,3 +835,23 @@ def import_database():
         flash(f'Database import failed: {str(e)}', 'error')
     
     return redirect(url_for('admin.database_management'))
+
+@admin_bp.route('/toggle_admin/<int:user_id>')
+@login_required
+@admin_required
+def toggle_admin(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Prevent removing admin status from the only admin
+    if user.is_admin and User.query.filter_by(is_admin=True).count() == 1:
+        flash('Cannot remove admin status from the only admin user.', 'error')
+        return redirect(url_for('admin.users'))
+    
+    user.is_admin = not user.is_admin
+    db.session.commit()
+    
+    status = "granted admin privileges" if user.is_admin else "removed admin privileges"
+    flash(f'User {user.username} has been {status}.', 'success')
+    logging.info(f"Admin {current_user.username} {status} for user {user.username}")
+    
+    return redirect(url_for('admin.users'))

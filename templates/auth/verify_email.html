@@ -1,63 +1,80 @@
 {% extends "base.html" %}
 
-{% block title %}Verify Email - {{ app_settings.app_name }}{% endblock %}
+{% block title %}Email Verification - RoseCoin{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow">
-            <div class="card-body p-4 text-center">
-                <i class="fas fa-envelope-open-text fa-4x text-primary mb-4"></i>
-                <h3 class="mb-3">Email Verification</h3>
-                
-                {% if verification_status == 'success' %}
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle me-2"></i>
-                        Your email has been successfully verified!
+<div class="container-fluid h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <img src="{{ url_for('static', filename='images/icon-192.svg') }}" alt="RoseCoin" width="60" height="60" class="mb-3">
+                        <h3 class="card-title">Email Verification</h3>
                     </div>
-                    <p class="text-muted mb-4">
-                        You can now access all features of {{ app_settings.app_name }}.
-                    </p>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
-                    </a>
-                {% elif verification_status == 'expired' %}
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        This verification link has expired.
-                    </div>
-                    <p class="text-muted mb-4">
-                        Please request a new verification email.
-                    </p>
-                    <a href="{{ url_for('auth.resend_verification') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-paper-plane me-2"></i>Resend Verification Email
-                    </a>
-                {% elif verification_status == 'invalid' %}
-                    <div class="alert alert-danger">
-                        <i class="fas fa-times-circle me-2"></i>
-                        Invalid verification link.
-                    </div>
-                    <p class="text-muted mb-4">
-                        This link is not valid or has already been used.
-                    </p>
-                    <a href="{{ url_for('auth.resend_verification') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-paper-plane me-2"></i>Resend Verification Email
-                    </a>
-                {% else %}
-                    <p class="text-muted mb-4">
-                        We've sent a verification email to your address. Please check your inbox and click the verification link to activate your account.
-                    </p>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Didn't receive the email? Check your spam folder or request a new one.
-                    </div>
-                    <a href="{{ url_for('auth.resend_verification') }}" class="btn btn-outline-primary me-2">
-                        <i class="fas fa-paper-plane me-2"></i>Resend Email
-                    </a>
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login
-                    </a>
-                {% endif %}
+
+                    {% if verification_status == 'success' %}
+                        <div class="text-center">
+                            <div class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                <h5>Email Verified Successfully!</h5>
+                                <p>Your email address has been verified. You can now log in to your account.</p>
+                            </div>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Login to Your Account
+                            </a>
+                        </div>
+                    {% elif verification_status == 'expired' %}
+                        <div class="text-center">
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                                <h5>Verification Link Expired</h5>
+                                <p>Your email verification link has expired. Please register again or request a new verification email.</p>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> Register Again
+                                </a>
+                                <a href="{{ url_for('auth.resend_verification') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-envelope"></i> Resend Verification
+                                </a>
+                            </div>
+                        </div>
+                    {% elif verification_status == 'invalid' %}
+                        <div class="text-center">
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-times-circle fa-2x mb-2"></i>
+                                <h5>Invalid Verification Link</h5>
+                                <p>The verification link is invalid. Please check your email or request a new verification email.</p>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> Register
+                                </a>
+                                <a href="{{ url_for('auth.resend_verification') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-envelope"></i> Resend Verification
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-envelope fa-2x mb-2"></i>
+                                <h5>Check Your Email</h5>
+                                <p>We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.</p>
+                                <p class="small text-muted">Didn't receive the email? Check your spam folder or request a new verification email.</p>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('auth.resend_verification') }}" class="btn btn-primary">
+                                    <i class="fas fa-envelope"></i> Resend Verification Email
+                                </a>
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-sign-in-alt"></i> Back to Login
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

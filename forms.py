@@ -26,6 +26,10 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', 
                                    validators=[DataRequired(), EqualTo('password')])
+    profile_image = FileField('Profile Picture', validators=[
+        DataRequired('Profile picture is required'),
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only!')
+    ])
     referral_code = StringField('Referral Code (Optional)', validators=[Optional(), Length(max=16)])
 
 class TaskCompletionForm(FlaskForm):

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import datetime, timedelta
 import os
+import uuid
 from werkzeug.utils import secure_filename
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -10,7 +11,7 @@ from models.user import User
 from models.referral import Referral, ReferralSettings
 from models.settings import AppSettings
 from forms import LoginForm, RegisterForm, ProfileUpdateForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm
-from utils.helpers import generate_referral_code
+from utils.helpers import generate_referral_code, send_email
 import logging
 
 auth_bp = Blueprint('auth', __name__)
@@ -33,6 +34,10 @@ def login():
         if user and check_password_hash(user.password_hash, password):
             if not user.is_active:
                 flash('Your account has been deactivated. Please contact support.', 'error')
+                return render_template('auth/login.html', form=form)
+            
+            if not user.email_verified:
+                flash('Please verify your email address before logging in. Check your inbox for the verification link.', 'warning')
                 return render_template('auth/login.html', form=form)
             
             # Check maintenance mode for non-admin users
@@ -97,12 +102,36 @@ def register():
             return render_template('auth/register.html', form=form)
         
         # Check if user exists
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.', 'error')
-            return render_template('auth/register.html', form=form)
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            form.username.errors.append('Username already exists.')
         
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered.', 'error')
+        existing_email = User.query.filter_by(email=email).first()
+        if existing_email:
+            form.email.errors.append('Email already registered.')
+        
+        # Handle profile image upload
+        profile_image_filename = None
+        if form.profile_image.data:
+            file = form.profile_image.data
+            if file.filename:
+                # Create uploads directory if it doesn't exist
+                upload_dir = os.path.join(os.getcwd(), 'static', 'uploads', 'profiles')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                # Generate unique filename
+                filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
+                filepath = os.path.join(upload_dir, filename)
+                
+                try:
+                    file.save(filepath)
+                    profile_image_filename = filename
+                except Exception as e:
+                    logging.error(f"Profile image upload error: {str(e)}")
+                    form.profile_image.errors.append('Failed to upload profile image.')
+        
+        # If there are validation errors, return to form
+        if form.username.errors or form.email.errors or form.profile_image.errors:
             return render_template('auth/register.html', form=form)
         
         # Handle referral
@@ -120,8 +149,14 @@ def register():
             first_name=first_name,
             last_name=last_name,
             balance=100.0,  # Welcome bonus
-            referred_by=referrer.id if referrer else None
+            referred_by=referrer.id if referrer else None,
+            profile_image=profile_image_filename,
+            email_verified=False
         )
+        
+        # Generate email verification token
+        user.email_verification_token = user.generate_verification_token()
+        user.email_verification_expires = datetime.utcnow() + timedelta(hours=24)
         
         try:
             db.session.add(user)
@@ -147,7 +182,22 @@ def register():
             else:
                 logging.info(f"New user {username} registered without referral")
             
-            flash('Registration successful! You can now log in.', 'success')
+            # Send verification email
+            verification_link = url_for('auth.verify_email', token=user.email_verification_token, _external=True)
+            email_body = f"""
+            Welcome to RoseCoin!
+            
+            Please verify your email address by clicking the link below:
+            {verification_link}
+            
+            This link will expire in 24 hours.
+            
+            If you didn't create this account, please ignore this email.
+            """
+            
+            send_email(email, 'Verify Your RoseCoin Account', email_body)
+            
+            flash('Registration successful! Please check your email to verify your account before logging in.', 'success')
             return redirect(url_for('auth.login'))
             
         except Exception as e:
