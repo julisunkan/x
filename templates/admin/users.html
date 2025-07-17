@@ -108,6 +108,9 @@
                                         {% if user.is_admin %}
                                         <br><span class="badge bg-primary">Admin</span>
                                         {% endif %}
+                                        {% if not user.email_verified %}
+                                        <br><span class="badge bg-warning">Unverified Email</span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         <small>{{ user.created_at.strftime('%m/%d/%Y') }}</small>
@@ -137,6 +140,14 @@
                                                     {% endif %}
                                                 </button>
                                             </form>
+                                            {% endif %}
+                                            
+                                            {% if not user.email_verified %}
+                                            <a href="{{ url_for('admin.verify_user_email', user_id=user.id) }}" 
+                                               class="btn btn-outline-info btn-sm" 
+                                               onclick="return confirm('Verify email for {{ user.username }}?')">
+                                                <i class="fas fa-envelope-check me-1"></i>Verify Email
+                                            </a>
                                             {% endif %}
                                             
                                             <!-- Edit Balance Modal Trigger -->

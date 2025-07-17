@@ -119,8 +119,6 @@ class User(UserMixin, db.Model):
         return (self.password_reset_token == token and 
                 self.password_reset_expires > datetime.utcnow())
     
-
-    
     @property
     def xp_for_next_level(self):
         return self.level * 1000
@@ -132,12 +130,6 @@ class User(UserMixin, db.Model):
         progress_xp = self.xp - current_level_xp
         total_xp_needed = next_level_xp - current_level_xp
         return (progress_xp / total_xp_needed) * 100 if total_xp_needed > 0 else 0
-    
-    @property
-    def profile_image_url(self):
-        if self.profile_image:
-            return f'/static/uploads/profiles/{self.profile_image}'
-        return '/static/images/default-avatar.svg'
     
     def add_xp(self, amount):
         self.xp += amount

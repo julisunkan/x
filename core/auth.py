@@ -11,7 +11,7 @@ from models.user import User
 from models.referral import Referral, ReferralSettings
 from models.settings import AppSettings
 from forms import LoginForm, RegisterForm, ProfileUpdateForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm
-from utils.helpers import generate_referral_code, send_email
+from utils.helpers import generate_referral_code
 import logging
 
 auth_bp = Blueprint('auth', __name__)
@@ -336,7 +336,16 @@ def forgot_password():
                 
                 # Send email with reset link
                 reset_url = url_for('auth.reset_password', token=token, _external=True)
-                send_password_reset_email(user.email, reset_url)
+                send_email(user.email, 'Reset Your RoseCoin Password', f"""
+                You requested a password reset for your RoseCoin account.
+                
+                Click the link below to reset your password:
+                {reset_url}
+                
+                This link will expire in 1 hour.
+                
+                If you didn't request this reset, please ignore this email.
+                """)
                 
                 flash('If that email address is in our system, you will receive a password reset link shortly.', 'info')
                 logging.info(f"Password reset requested for user: {user.username}")
@@ -424,7 +433,16 @@ def resend_verification():
             
             # Send verification email
             verify_url = url_for('auth.verify_email', token=token, _external=True)
-            send_verification_email(current_user.email, verify_url)
+            send_email(current_user.email, 'Verify Your RoseCoin Account', f"""
+            Welcome to RoseCoin!
+            
+            Please verify your email address by clicking the link below:
+            {verify_url}
+            
+            This link will expire in 24 hours.
+            
+            If you didn't create this account, please ignore this email.
+            """)
             
             flash('A new verification email has been sent to your email address.', 'info')
             logging.info(f"Verification email resent for user: {current_user.username}")
@@ -475,6 +493,34 @@ def send_password_reset_email(email, reset_url):
         
     except Exception as e:
         logging.error(f"Failed to send password reset email: {str(e)}")
+        return False
+
+def send_email(to_email, subject, text_content):
+    """Generic email sending function using SendGrid"""
+    try:
+        # Import SendGrid if available
+        from sendgrid import SendGridAPIClient
+        from sendgrid.helpers.mail import Mail
+        
+        api_key = os.environ.get('SENDGRID_API_KEY')
+        if not api_key:
+            logging.warning("SendGrid API key not found. Email not sent.")
+            return False
+        
+        sg = SendGridAPIClient(api_key)
+        
+        message = Mail(
+            from_email='noreply@rosecoin.app',
+            to_emails=to_email,
+            subject=subject,
+            plain_text_content=text_content
+        )
+        
+        response = sg.send(message)
+        return response.status_code == 202
+        
+    except Exception as e:
+        logging.error(f"Failed to send email: {str(e)}")
         return False
 
 def send_verification_email(email, verify_url):
