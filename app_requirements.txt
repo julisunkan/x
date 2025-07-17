@@ -1,0 +1,61 @@
+# RoseCoin Mining Platform - Application Requirements
+# Generated on July 17, 2025
+
+# Core Flask framework and extensions
+Flask>=3.1.1
+Flask-Login>=0.6.3
+Flask-WTF>=1.2.2
+Flask-SQLAlchemy>=3.1.1
+Flask-Babel>=4.0.0
+
+# Database and ORM
+SQLAlchemy>=2.0.41
+psycopg2-binary>=2.9.10
+
+# Security and validation
+Werkzeug>=3.1.3
+WTForms>=3.2.1
+email-validator>=2.2.0
+
+# Web server
+gunicorn>=23.0.0
+
+# Email services (legacy - now using SMTP)
+sendgrid>=6.12.4
+
+# =============================================================
+# INSTALLATION INSTRUCTIONS:
+# =============================================================
+# 1. Create virtual environment: python -m venv venv
+# 2. Activate virtual environment: 
+#    - Windows: venv\Scripts\activate
+#    - Linux/Mac: source venv/bin/activate
+# 3. Install dependencies: pip install -r app_requirements.txt
+# 4. Set environment variables:
+#    - SESSION_SECRET=your-secret-key-here
+#    - DATABASE_URL=sqlite:///instance/rosecoin.db (or PostgreSQL URL)
+# 5. Run the application: python main.py or gunicorn --bind 0.0.0.0:5000 main:app
+#
+# =============================================================
+# CURRENT PROJECT SETUP (Replit):
+# =============================================================
+# This project uses pyproject.toml for dependency management
+# All dependencies are already installed and configured
+# No manual installation required in Replit environment
+#
+# =============================================================
+# OPTIONAL DEPENDENCIES (for enhanced functionality):
+# =============================================================
+# Pillow>=10.0.0          # For advanced image processing
+# requests>=2.31.0        # For external API calls
+# python-dotenv>=1.0.0    # For .env file support
+# celery>=5.3.0          # For background tasks
+# redis>=5.0.0           # For caching and background tasks
+#
+# =============================================================
+# DEVELOPMENT DEPENDENCIES (optional):
+# =============================================================
+# pytest>=7.4.0          # For testing
+# black>=23.0.0           # For code formatting
+# flake8>=6.0.0           # For code linting
+# mypy>=1.5.0             # For type checking
