@@ -268,6 +268,7 @@ def create_tables():
                     email='admin@rosecoin.com',
                     password_hash=generate_password_hash('admin123'),
                     is_admin=True,
+                    email_verified=True,  # Admin user is pre-verified
                     balance=1000000,
                     xp=10000,
                     level=10
@@ -276,6 +277,11 @@ def create_tables():
                 db.session.commit()
                 logging.info("✅ Admin user created: admin / admin123")
             else:
+                # Ensure existing admin is email verified
+                if not existing_admin.email_verified:
+                    existing_admin.email_verified = True
+                    db.session.commit()
+                    logging.info("ℹ️ Admin user email verification updated.")
                 logging.info("ℹ️ Admin user already exists. Skipping creation.")
         except Exception as e:
             db.session.rollback()
