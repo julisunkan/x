@@ -22,11 +22,7 @@ class User(UserMixin, db.Model):
     # Account status
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
-    email_verified = db.Column(db.Boolean, default=False)
-    email_verification_token = db.Column(db.String(255))
-    email_verification_expires = db.Column(db.DateTime)
-    password_reset_token = db.Column(db.String(255))
-    password_reset_expires = db.Column(db.DateTime)
+    email_verified = db.Column(db.Boolean, default=True)  # Auto-verified, no verification needed
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -66,15 +62,7 @@ class User(UserMixin, db.Model):
         import string
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     
-    def generate_verification_token(self):
-        """Generate a secure token for email verification"""
-        import secrets
-        return secrets.token_urlsafe(32)
-    
-    def generate_password_reset_token(self):
-        """Generate a secure token for password reset"""
-        import secrets
-        return secrets.token_urlsafe(32)
+
     
     def _generate_default_avatar(self):
         """Generate a default avatar filename based on username"""
@@ -103,21 +91,7 @@ class User(UserMixin, db.Model):
         """Alias for profile_image_url for template compatibility"""
         return self.get_profile_image_url()
     
-    def is_verification_token_valid(self, token):
-        """Check if email verification token is valid and not expired"""
-        from datetime import datetime
-        if not self.email_verification_token or not self.email_verification_expires:
-            return False
-        return (self.email_verification_token == token and 
-                self.email_verification_expires > datetime.utcnow())
-    
-    def is_password_reset_token_valid(self, token):
-        """Check if password reset token is valid and not expired"""
-        from datetime import datetime
-        if not self.password_reset_token or not self.password_reset_expires:
-            return False
-        return (self.password_reset_token == token and 
-                self.password_reset_expires > datetime.utcnow())
+
     
     @property
     def xp_for_next_level(self):

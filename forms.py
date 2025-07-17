@@ -8,15 +8,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
 
-class ForgotPasswordForm(FlaskForm):
-    email = EmailField('Email Address', validators=[DataRequired(), Email()])
-    submit = SubmitField('Send Reset Link')
 
-class ResetPasswordForm(FlaskForm):
-    password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirm New Password', 
-                                   validators=[DataRequired(), EqualTo('password', message='Password does not match')])
-    submit = SubmitField('Reset Password')
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])

@@ -59,6 +59,9 @@
                             </span>
                             {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), required=True) }}
                         </div>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> Please enter a valid email address. Instructions about Airdrops & Tasks will be sent there.
+                        </small>
                         {% if form.email.errors %}
                             <div class="invalid-feedback d-block">
                                 {% for error in form.email.errors %}{{ error }}{% endfor %}

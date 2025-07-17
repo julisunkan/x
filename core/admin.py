@@ -912,26 +912,4 @@ def toggle_admin(user_id):
     
     return redirect(url_for('admin.users'))
 
-@admin_bp.route('/verify_user_email/<int:user_id>')
-@login_required
-@admin_required
-def verify_user_email(user_id):
-    user = User.query.get_or_404(user_id)
-    
-    if user.email_verified:
-        flash(f'User {user.username} email is already verified.', 'info')
-    else:
-        user.email_verified = True
-        user.email_verification_token = None
-        user.email_verification_expires = None
-        
-        try:
-            db.session.commit()
-            flash(f'User {user.username} email has been verified by admin.', 'success')
-            logging.info(f"Admin {current_user.username} manually verified email for user {user.username}")
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Error verifying user email: {str(e)}")
-            flash('An error occurred while verifying user email.', 'error')
-    
-    return redirect(url_for('admin.users'))
+

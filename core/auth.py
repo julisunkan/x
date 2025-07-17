@@ -10,7 +10,7 @@ from app import db
 from models.user import User
 from models.referral import Referral, ReferralSettings
 from models.settings import AppSettings
-from forms import LoginForm, RegisterForm, ProfileUpdateForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm
+from forms import LoginForm, RegisterForm, ProfileUpdateForm, ChangePasswordForm
 from utils.helpers import generate_referral_code
 import logging
 
@@ -36,9 +36,7 @@ def login():
                 flash('Your account has been deactivated. Please contact support.', 'error')
                 return render_template('auth/login.html', form=form)
             
-            if not user.email_verified:
-                flash('Please verify your email address before logging in. Check your inbox for the verification link.', 'warning')
-                return render_template('auth/login.html', form=form)
+
             
             # Check maintenance mode for non-admin users
             try:
@@ -141,7 +139,7 @@ def register():
             if not referrer:
                 flash('Invalid referral code.', 'warning')
         
-        # Create new user
+        # Create new user (no email verification required)
         user = User(
             username=username,
             email=email,
@@ -151,12 +149,8 @@ def register():
             balance=100.0,  # Welcome bonus
             referred_by=referrer.id if referrer else None,
             profile_image=profile_image_filename,
-            email_verified=False
+            email_verified=True  # Auto-verified, no verification needed
         )
-        
-        # Generate email verification token
-        user.email_verification_token = user.generate_verification_token()
-        user.email_verification_expires = datetime.utcnow() + timedelta(hours=24)
         
         try:
             db.session.add(user)
@@ -182,22 +176,7 @@ def register():
             else:
                 logging.info(f"New user {username} registered without referral")
             
-            # Send verification email
-            verification_link = url_for('auth.verify_email', token=user.email_verification_token, _external=True)
-            email_body = f"""
-            Welcome to RoseCoin!
-            
-            Please verify your email address by clicking the link below:
-            {verification_link}
-            
-            This link will expire in 24 hours.
-            
-            If you didn't create this account, please ignore this email.
-            """
-            
-            send_email(email, 'Verify Your RoseCoin Account', email_body)
-            
-            flash('Registration successful! Please check your email to verify your account before logging in.', 'success')
+            flash('Registration successful! You can now log in. Make sure to use a valid email address as instructions about Airdrops & Tasks will be sent there.', 'success')
             return redirect(url_for('auth.login'))
             
         except Exception as e:
@@ -315,172 +294,7 @@ def update_wallet():
     return redirect(url_for('profile'))
 
 
-@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    
-    form = ForgotPasswordForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        user = User.query.filter_by(email=email).first()
-        
-        if user:
-            # Generate reset token
-            token = user.generate_password_reset_token()
-            user.password_reset_token = token
-            user.password_reset_expires = datetime.utcnow() + timedelta(hours=1)
-            
-            try:
-                db.session.commit()
-                
-                # Send email with reset link
-                reset_url = url_for('auth.reset_password', token=token, _external=True)
-                send_email(user.email, 'Reset Your RoseCoin Password', f"""
-                You requested a password reset for your RoseCoin account.
-                
-                Click the link below to reset your password:
-                {reset_url}
-                
-                This link will expire in 1 hour.
-                
-                If you didn't request this reset, please ignore this email.
-                """)
-                
-                flash('If that email address is in our system, you will receive a password reset link shortly.', 'info')
-                logging.info(f"Password reset requested for user: {user.username}")
-                
-            except Exception as e:
-                db.session.rollback()
-                logging.error(f"Password reset error: {str(e)}")
-                flash('An error occurred. Please try again.', 'error')
-        else:
-            # Don't reveal if email exists or not
-            flash('If that email address is in our system, you will receive a password reset link shortly.', 'info')
-        
-        return redirect(url_for('auth.login'))
-    
-    return render_template('auth/forgot_password.html', form=form)
 
-@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    
-    user = User.query.filter_by(password_reset_token=token).first()
-    
-    if not user or not user.is_password_reset_token_valid(token):
-        flash('Invalid or expired reset link. Please request a new one.', 'error')
-        return redirect(url_for('auth.forgot_password'))
-    
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        user.password_hash = generate_password_hash(form.password.data)
-        user.password_reset_token = None
-        user.password_reset_expires = None
-        
-        try:
-            db.session.commit()
-            flash('Your password has been reset successfully! You can now log in.', 'success')
-            logging.info(f"Password reset successful for user: {user.username}")
-            return redirect(url_for('auth.login'))
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Password reset completion error: {str(e)}")
-            flash('An error occurred. Please try again.', 'error')
-    
-    return render_template('auth/reset_password.html', form=form)
-
-@auth_bp.route('/verify-email/<token>')
-def verify_email(token):
-    user = User.query.filter_by(email_verification_token=token).first()
-    
-    if not user:
-        return render_template('auth/verify_email.html', verification_status='invalid')
-    
-    if not user.is_verification_token_valid(token):
-        return render_template('auth/verify_email.html', verification_status='expired')
-    
-    user.email_verified = True
-    user.email_verification_token = None
-    user.email_verification_expires = None
-    
-    try:
-        db.session.commit()
-        flash('Your email has been verified successfully!', 'success')
-        logging.info(f"Email verified for user: {user.username}")
-        return render_template('auth/verify_email.html', verification_status='success')
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Email verification error: {str(e)}")
-        flash('An error occurred during verification.', 'error')
-        return render_template('auth/verify_email.html', verification_status='invalid')
-
-@auth_bp.route('/resend-verification')
-def resend_verification():
-    if current_user.is_authenticated:
-        if current_user.email_verified:
-            flash('Your email is already verified.', 'info')
-            return redirect(url_for('dashboard'))
-        
-        # Generate new verification token
-        token = current_user.generate_verification_token()
-        current_user.email_verification_token = token
-        current_user.email_verification_expires = datetime.utcnow() + timedelta(hours=24)
-        
-        try:
-            db.session.commit()
-            
-            # Send verification email
-            verify_url = url_for('auth.verify_email', token=token, _external=True)
-            send_email(current_user.email, 'Verify Your RoseCoin Account', f"""
-            Welcome to RoseCoin!
-            
-            Please verify your email address by clicking the link below:
-            {verify_url}
-            
-            This link will expire in 24 hours.
-            
-            If you didn't create this account, please ignore this email.
-            """)
-            
-            flash('A new verification email has been sent to your email address.', 'info')
-            logging.info(f"Verification email resent for user: {current_user.username}")
-            
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Resend verification error: {str(e)}")
-            flash('An error occurred. Please try again.', 'error')
-    
-    return render_template('auth/verify_email.html')
-
-def send_password_reset_email(email, reset_url):
-    """Send password reset email using SMTP"""
-    try:
-        from utils.smtp_client import smtp_client
-        from models.settings import AppSettings
-        
-        settings = AppSettings.get_settings()
-        app_name = settings.app_name or "RoseCoin"
-        
-        html_content = f"""
-        <html>
-        <body>
-            <h2>Password Reset Request</h2>
-            <p>You requested a password reset for your {app_name} account.</p>
-            <p>Click the link below to reset your password:</p>
-            <p><a href="{reset_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
-            <p>This link will expire in 1 hour.</p>
-            <p>If you didn't request this reset, please ignore this email.</p>
-        </body>
-        </html>
-        """
-        
-        return smtp_client.send_email(email, f'Password Reset - {app_name}', html_content, is_html=True)
-        
-    except Exception as e:
-        logging.error(f"Failed to send password reset email: {str(e)}")
-        return False
 
 def send_email(to_email, subject, text_content):
     """Generic email sending function using SMTP"""
@@ -489,34 +303,6 @@ def send_email(to_email, subject, text_content):
         return smtp_client.send_email(to_email, subject, text_content, is_html=False)
     except Exception as e:
         logging.error(f"Failed to send email: {str(e)}")
-        return False
-
-def send_verification_email(email, verify_url):
-    """Send email verification email using SMTP"""
-    try:
-        from utils.smtp_client import smtp_client
-        from models.settings import AppSettings
-        
-        settings = AppSettings.get_settings()
-        app_name = settings.app_name or "RoseCoin"
-        
-        html_content = f"""
-        <html>
-        <body>
-            <h2>Email Verification - {app_name}</h2>
-            <p>Thank you for signing up for {app_name}!</p>
-            <p>Please verify your email address by clicking the link below:</p>
-            <p><a href="{verify_url}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
-            <p>This link will expire in 24 hours.</p>
-            <p>If you didn't create this account, please ignore this email.</p>
-        </body>
-        </html>
-        """
-        
-        return smtp_client.send_email(email, f'Email Verification - {app_name}', html_content, is_html=True)
-        
-    except Exception as e:
-        logging.error(f"Failed to send verification email: {str(e)}")
         return False
 
 

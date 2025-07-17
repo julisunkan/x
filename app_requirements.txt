@@ -20,8 +20,8 @@ email-validator>=2.2.0
 # Web server
 gunicorn>=23.0.0
 
-# Email services (legacy - now using SMTP)
-sendgrid>=6.12.4
+# Email services (legacy - removed, now using SMTP only)
+# sendgrid>=6.12.4  # Removed - no longer needed
 
 # =============================================================
 # INSTALLATION INSTRUCTIONS:
