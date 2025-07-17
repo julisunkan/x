@@ -16,18 +16,19 @@ class SMTPClient:
     """SMTP client for sending emails"""
     
     def __init__(self):
-        self.settings = AppSettings.get_settings()
+        pass
         
     def get_smtp_config(self):
         """Get SMTP configuration from database"""
+        settings = AppSettings.get_settings()
         return {
-            'server': self.settings.smtp_server,
-            'port': self.settings.smtp_port,
-            'username': self.settings.smtp_username,
-            'password': self.settings.smtp_password,
-            'use_tls': self.settings.smtp_use_tls,
-            'from_email': self.settings.smtp_from_email,
-            'from_name': self.settings.smtp_from_name
+            'server': settings.smtp_server,
+            'port': settings.smtp_port,
+            'username': settings.smtp_username,
+            'password': settings.smtp_password,
+            'use_tls': settings.smtp_use_tls,
+            'from_email': settings.smtp_from_email,
+            'from_name': settings.smtp_from_name
         }
     
     def test_connection(self):
@@ -36,11 +37,22 @@ class SMTPClient:
             config = self.get_smtp_config()
             
             # Validate required fields
-            if not all([config['server'], config['port'], config['username'], 
-                       config['password'], config['from_email']]):
+            missing_fields = []
+            if not config['server']:
+                missing_fields.append('SMTP Server')
+            if not config['port']:
+                missing_fields.append('SMTP Port')
+            if not config['username']:
+                missing_fields.append('SMTP Username')
+            if not config['password']:
+                missing_fields.append('SMTP Password')
+            if not config['from_email']:
+                missing_fields.append('From Email')
+            
+            if missing_fields:
                 return {
                     'success': False,
-                    'message': 'Missing required SMTP configuration fields'
+                    'message': f'Missing required SMTP configuration fields: {", ".join(missing_fields)}'
                 }
             
             # Create SMTP connection
@@ -103,9 +115,20 @@ class SMTPClient:
             config = self.get_smtp_config()
             
             # Validate configuration
-            if not all([config['server'], config['port'], config['username'], 
-                       config['password'], config['from_email']]):
-                logging.error("Missing required SMTP configuration")
+            missing_fields = []
+            if not config['server']:
+                missing_fields.append('SMTP Server')
+            if not config['port']:
+                missing_fields.append('SMTP Port')
+            if not config['username']:
+                missing_fields.append('SMTP Username')
+            if not config['password']:
+                missing_fields.append('SMTP Password')
+            if not config['from_email']:
+                missing_fields.append('From Email')
+            
+            if missing_fields:
+                logging.error(f"Missing required SMTP configuration: {', '.join(missing_fields)}")
                 return False
             
             # Create message
