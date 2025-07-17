@@ -633,47 +633,40 @@ def update_smtp_settings():
 @login_required
 @admin_required
 def test_smtp():
-    settings = AppSettings.get_settings()
-    
-    if not all([settings.smtp_server, settings.smtp_username, settings.smtp_password]):
-        flash('Please configure SMTP settings first.', 'error')
-        return redirect(url_for('admin.settings'))
-    
     try:
-        import smtplib
-        from email.mime.text import MIMEText
-        from email.mime.multipart import MIMEMultipart
+        from utils.smtp_client import smtp_client
         
-        # Create test email
-        msg = MIMEMultipart()
-        msg['From'] = f"{settings.smtp_from_name} <{settings.smtp_from_email}>"
-        msg['To'] = current_user.email
-        msg['Subject'] = f"SMTP Test from {settings.app_name}"
+        # Test connection first
+        connection_result = smtp_client.test_connection()
         
-        body = f"""
-        This is a test email from {settings.app_name}.
+        if not connection_result['success']:
+            return jsonify({
+                'success': False,
+                'message': connection_result['message']
+            })
         
-        If you receive this email, your SMTP configuration is working correctly.
+        # Send test email
+        test_email_result = smtp_client.send_test_email(current_user.email)
         
-        Sent at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        """
-        
-        msg.attach(MIMEText(body, 'plain'))
-        
-        # Send email
-        with smtplib.SMTP(settings.smtp_server, settings.smtp_port) as server:
-            if settings.smtp_use_tls:
-                server.starttls()
-            server.login(settings.smtp_username, settings.smtp_password)
-            server.send_message(msg)
-        
-        flash(f'Test email sent successfully to {current_user.email}!', 'success')
-        logging.info(f"Admin {current_user.username} sent SMTP test email")
+        if test_email_result:
+            message = f'SMTP test successful! Test email sent to {current_user.email}.'
+            logging.info(f"Admin {current_user.username} successfully tested SMTP")
+            return jsonify({
+                'success': True,
+                'message': message
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'SMTP connection successful but failed to send test email.'
+            })
+            
     except Exception as e:
         logging.error(f"SMTP test failed: {str(e)}")
-        flash(f'SMTP test failed: {str(e)}', 'error')
-    
-    return redirect(url_for('admin.settings'))
+        return jsonify({
+            'success': False,
+            'message': f'SMTP test failed: {str(e)}'
+        })
 
 @admin_bp.route('/database')
 @login_required

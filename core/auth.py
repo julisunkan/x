@@ -455,24 +455,19 @@ def resend_verification():
     return render_template('auth/verify_email.html')
 
 def send_password_reset_email(email, reset_url):
-    """Send password reset email using SendGrid"""
+    """Send password reset email using SMTP"""
     try:
-        # Import SendGrid if available
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
+        from utils.smtp_client import smtp_client
+        from models.settings import AppSettings
         
-        api_key = os.environ.get('SENDGRID_API_KEY')
-        if not api_key:
-            logging.warning("SendGrid API key not found. Email not sent.")
-            return False
-        
-        sg = SendGridAPIClient(api_key)
+        settings = AppSettings.get_settings()
+        app_name = settings.app_name or "RoseCoin"
         
         html_content = f"""
         <html>
         <body>
             <h2>Password Reset Request</h2>
-            <p>You requested a password reset for your RoseCoin account.</p>
+            <p>You requested a password reset for your {app_name} account.</p>
             <p>Click the link below to reset your password:</p>
             <p><a href="{reset_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
             <p>This link will expire in 1 hour.</p>
@@ -481,67 +476,35 @@ def send_password_reset_email(email, reset_url):
         </html>
         """
         
-        message = Mail(
-            from_email='noreply@rosecoin.app',
-            to_emails=email,
-            subject='Password Reset - RoseCoin',
-            html_content=html_content
-        )
-        
-        response = sg.send(message)
-        return response.status_code == 202
+        return smtp_client.send_email(email, f'Password Reset - {app_name}', html_content, is_html=True)
         
     except Exception as e:
         logging.error(f"Failed to send password reset email: {str(e)}")
         return False
 
 def send_email(to_email, subject, text_content):
-    """Generic email sending function using SendGrid"""
+    """Generic email sending function using SMTP"""
     try:
-        # Import SendGrid if available
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-        
-        api_key = os.environ.get('SENDGRID_API_KEY')
-        if not api_key:
-            logging.warning("SendGrid API key not found. Email not sent.")
-            return False
-        
-        sg = SendGridAPIClient(api_key)
-        
-        message = Mail(
-            from_email='noreply@rosecoin.app',
-            to_emails=to_email,
-            subject=subject,
-            plain_text_content=text_content
-        )
-        
-        response = sg.send(message)
-        return response.status_code == 202
-        
+        from utils.smtp_client import smtp_client
+        return smtp_client.send_email(to_email, subject, text_content, is_html=False)
     except Exception as e:
         logging.error(f"Failed to send email: {str(e)}")
         return False
 
 def send_verification_email(email, verify_url):
-    """Send email verification email using SendGrid"""
+    """Send email verification email using SMTP"""
     try:
-        # Import SendGrid if available
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
+        from utils.smtp_client import smtp_client
+        from models.settings import AppSettings
         
-        api_key = os.environ.get('SENDGRID_API_KEY')
-        if not api_key:
-            logging.warning("SendGrid API key not found. Email not sent.")
-            return False
-        
-        sg = SendGridAPIClient(api_key)
+        settings = AppSettings.get_settings()
+        app_name = settings.app_name or "RoseCoin"
         
         html_content = f"""
         <html>
         <body>
-            <h2>Email Verification - RoseCoin</h2>
-            <p>Thank you for signing up for RoseCoin!</p>
+            <h2>Email Verification - {app_name}</h2>
+            <p>Thank you for signing up for {app_name}!</p>
             <p>Please verify your email address by clicking the link below:</p>
             <p><a href="{verify_url}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
             <p>This link will expire in 24 hours.</p>
@@ -550,15 +513,7 @@ def send_verification_email(email, verify_url):
         </html>
         """
         
-        message = Mail(
-            from_email='noreply@rosecoin.app',
-            to_emails=email,
-            subject='Email Verification - RoseCoin',
-            html_content=html_content
-        )
-        
-        response = sg.send(message)
-        return response.status_code == 202
+        return smtp_client.send_email(email, f'Email Verification - {app_name}', html_content, is_html=True)
         
     except Exception as e:
         logging.error(f"Failed to send verification email: {str(e)}")

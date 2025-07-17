@@ -172,34 +172,11 @@ def get_status_badge_class(status):
     return status_classes.get(status.lower(), 'badge-secondary')
 
 def send_email(to_email, subject, body, is_html=False):
-    """Send email using SendGrid or log to console in development"""
-    import os
-    import logging
-    
-    sendgrid_key = os.environ.get('SENDGRID_API_KEY')
-    
-    if not sendgrid_key:
-        # In development, just log the email
-        logging.info(f"EMAIL TO: {to_email}")
-        logging.info(f"SUBJECT: {subject}")
-        logging.info(f"BODY: {body}")
-        return True
-    
+    """Send email using SMTP configuration from database"""
     try:
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-        
-        sg = SendGridAPIClient(sendgrid_key)
-        message = Mail(
-            from_email='noreply@rosecoin.app',
-            to_emails=to_email,
-            subject=subject,
-            html_content=body if is_html else None,
-            plain_text_content=body if not is_html else None
-        )
-        
-        response = sg.send(message)
-        return response.status_code == 202
+        from utils.smtp_client import smtp_client
+        return smtp_client.send_email(to_email, subject, body, is_html)
     except Exception as e:
+        import logging
         logging.error(f"Email sending error: {str(e)}")
         return False
