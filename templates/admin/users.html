@@ -156,6 +156,17 @@
                                                     onclick="setEditBalance({{ user.id }}, '{{ user.username }}', {{ user.balance }})">
                                                 <i class="fas fa-coins me-1"></i>Edit Balance
                                             </button>
+                                            
+                                            <!-- Delete User Button -->
+                                            {% if user.id != current_user.id and not user.is_admin %}
+                                            <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
+                                                  class="d-inline" onsubmit="return confirmDelete('{{ user.username }}')">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-trash me-1"></i>Delete User
+                                                </button>
+                                            </form>
+                                            {% endif %}
                                         </div>
                                     </td>
                                 </tr>
@@ -250,6 +261,10 @@ function setEditBalance(userId, username, currentBalance) {
     document.getElementById('editBalanceForm').action = `/admin/users/${userId}/edit-balance`;
     document.getElementById('editUsername').textContent = username;
     document.getElementById('balance').value = currentBalance;
+}
+
+function confirmDelete(username) {
+    return confirm(`Are you sure you want to delete user "${username}"?\n\nThis action cannot be undone and will permanently remove:\n- User account and profile\n- All mining sessions\n- Task completions\n- Withdrawals\n- Referral data\n- Airdrop participations\n\nType "DELETE" to confirm deletion.`);
 }
 </script>
 {% endblock %}

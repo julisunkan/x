@@ -10,6 +10,8 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **SMTP Email System Implementation (July 17, 2025)**: Completely replaced SendGrid with SMTP-based email system using database configuration. Added connection testing functionality in admin panel with success/error feedback. All emails (verification, password reset) now use SMTP with proper error handling and configuration validation.
+- **Admin User Management Enhancement (July 17, 2025)**: Added comprehensive user deletion functionality with cascading deletion of related records (mining sessions, tasks, withdrawals, referrals, airdrops). Added safety checks preventing self-deletion and admin account deletion. Enhanced user management interface with better action buttons and confirmation dialogs.
 - **Admin Email Verification & Code Review (July 17, 2025)**: Added admin functionality to manually verify user emails with "Verify Email" button in admin users panel. Completed comprehensive code review fixing duplicate properties in User model, missing function calls in auth.py, and streamlined email sending functions. All components verified working correctly with proper error handling.
 - **Replit Agent Migration Completed (July 17, 2025)**: Successfully migrated from Replit Agent to standard Replit environment with proper security configurations. Fixed missing AppSettings import in auth.py that was causing registration internal server errors. All functionality verified working correctly.
 - **Dropdown Navigation Implementation (July 2025)**: Converted navigation from horizontal overflow to clean dropdown approach with essential links visible and overflow items in organized dropdown menus.

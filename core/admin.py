@@ -126,6 +126,62 @@ def edit_user_balance(user_id):
     
     return redirect(url_for('admin.users'))
 
+@admin_bp.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    if user.id == current_user.id:
+        flash('You cannot delete your own account.', 'error')
+        return redirect(url_for('admin.users'))
+    
+    if user.is_admin:
+        flash('You cannot delete another admin account.', 'error')
+        return redirect(url_for('admin.users'))
+    
+    username = user.username
+    
+    try:
+        # Delete related records first to maintain referential integrity
+        from models.mining import MiningSession
+        from models.task import TaskCompletion
+        from models.withdrawal import Withdrawal
+        from models.airdrop import AirdropParticipation
+        from models.referral import Referral
+        
+        # Delete mining sessions
+        MiningSession.query.filter_by(user_id=user_id).delete()
+        
+        # Delete task completions
+        TaskCompletion.query.filter_by(user_id=user_id).delete()
+        
+        # Delete withdrawals
+        Withdrawal.query.filter_by(user_id=user_id).delete()
+        
+        # Delete airdrop participations
+        AirdropParticipation.query.filter_by(user_id=user_id).delete()
+        
+        # Delete referrals (both as referrer and referee)
+        Referral.query.filter_by(referrer_id=user_id).delete()
+        Referral.query.filter_by(referee_id=user_id).delete()
+        
+        # Finally delete the user
+        db.session.delete(user)
+        db.session.commit()
+        
+        flash(f'User {username} has been deleted successfully.', 'success')
+        logging.info(f"Admin {current_user.username} deleted user {username}")
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting user {username}: {str(e)}")
+        flash('An error occurred while deleting the user.', 'error')
+    
+    return redirect(url_for('admin.users'))
+
+
+
 @admin_bp.route('/withdrawals')
 @login_required
 @admin_required
