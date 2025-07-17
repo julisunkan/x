@@ -8,6 +8,7 @@ from datetime import datetime
 from app import db
 from models.user import User
 from models.referral import Referral, ReferralSettings
+from models.settings import AppSettings
 from forms import LoginForm, RegisterForm, ProfileUpdateForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm
 from utils.helpers import generate_referral_code
 import logging
@@ -64,7 +65,6 @@ def register():
         return redirect(url_for('dashboard'))
     
     # Check maintenance mode - block all registrations
-    from models.settings import AppSettings
     try:
         settings = AppSettings.get_settings()
         if settings.maintenance_mode:
