@@ -70,7 +70,7 @@ class MiningManager {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken
+                    'X-CSRFToken': window.csrfToken
                 }
             });
 
