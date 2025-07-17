@@ -17,64 +17,100 @@
                     {{ form.hidden_tag() }}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name">
+                            {{ form.first_name.label(class="form-label") }}
+                            {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
+                            {% if form.first_name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name">
+                            {{ form.last_name.label(class="form-label") }}
+                            {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
+                            {% if form.last_name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="username" class="form-label">Username *</label>
+                        {{ form.username.label(class="form-label") }}
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" class="form-control" id="username" name="username" required>
+                            {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), required=True) }}
                         </div>
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.username.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email *</label>
+                        {{ form.email.label(class="form-label") }}
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-envelope"></i>
                             </span>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), required=True) }}
                         </div>
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Password *</label>
+                            {{ form.password.label(class="form-label") }}
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="fas fa-lock"></i>
                                 </span>
-                                <input type="password" class="form-control" id="password" name="password" required>
+                                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), required=True) }}
                             </div>
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Must be at least 6 characters long</div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="confirm_password" class="form-label">Confirm Password *</label>
+                            {{ form.confirm_password.label(class="form-label") }}
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="fas fa-lock"></i>
                                 </span>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else ""), required=True) }}
                             </div>
+                            {% if form.confirm_password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.confirm_password.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="referral_code" class="form-label">Referral Code (Optional)</label>
+                        {{ form.referral_code.label(class="form-label") }}
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-gift"></i>
                             </span>
-                            <input type="text" class="form-control" id="referral_code" name="referral_code">
+                            {{ form.referral_code(class="form-control" + (" is-invalid" if form.referral_code.errors else "")) }}
                         </div>
+                        {% if form.referral_code.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.referral_code.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
                         <div class="form-text">Enter a referral code to get bonus coins!</div>
                     </div>
 
