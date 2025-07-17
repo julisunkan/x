@@ -15,7 +15,7 @@ class ForgotPasswordForm(FlaskForm):
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm New Password', 
-                                   validators=[DataRequired(), EqualTo('password')])
+                                   validators=[DataRequired(), EqualTo('password', message='Password does not match')])
     submit = SubmitField('Reset Password')
 
 class RegisterForm(FlaskForm):
@@ -25,7 +25,7 @@ class RegisterForm(FlaskForm):
     last_name = StringField('Last Name', validators=[Optional(), Length(max=64)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', 
-                                   validators=[DataRequired(), EqualTo('password')])
+                                   validators=[DataRequired(), EqualTo('password', message='Password does not match')])
     profile_image = FileField('Profile Picture', validators=[
         DataRequired('Profile picture is required'),
         FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only!')
