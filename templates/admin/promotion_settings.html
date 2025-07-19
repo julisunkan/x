@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Promotion Settings - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-cog me-2"></i>Promotion Settings</h2>
+                            <p class="text-muted mb-0">Configure promotion system settings and payment instructions</p>
+                        </div>
+                        <a href="{{ url_for('promotions.admin_promotions') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Promotions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('promotions.promotion_settings') }}">
+        {{ csrf_token() }}
+        
+        <div class="row">
+            <!-- Main Settings -->
+            <div class="col-lg-8">
+                <!-- Payment Instructions -->
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Instructions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="payment_instructions" class="form-label">Payment Instructions *</label>
+                            <textarea class="form-control" id="payment_instructions" name="payment_instructions" 
+                                      rows="6" required>{{ settings.payment_instructions }}</textarea>
+                            <div class="form-text">
+                                These instructions will appear on invoices and payment pages. 
+                                Include bank details, PayPal email, or other payment methods.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Information -->
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0"><i class="fas fa-building me-2"></i>Business Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="business_name" class="form-label">Business Name</label>
+                                <input type="text" class="form-control" id="business_name" name="business_name" 
+                                       value="{{ settings.business_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="business_email" class="form-label">Business Email</label>
+                                <input type="email" class="form-control" id="business_email" name="business_email" 
+                                       value="{{ settings.business_email }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="business_phone" class="form-label">Business Phone</label>
+                                <input type="text" class="form-control" id="business_phone" name="business_phone" 
+                                       value="{{ settings.business_phone }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tax_id" class="form-label">Tax ID</label>
+                                <input type="text" class="form-control" id="tax_id" name="tax_id" 
+                                       value="{{ settings.tax_id }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="business_address" class="form-label">Business Address</label>
+                            <textarea class="form-control" id="business_address" name="business_address" 
+                                      rows="3">{{ settings.business_address }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0"><i class="fas fa-file-contract me-2"></i>Terms and Conditions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="terms_and_conditions" class="form-label">Terms and Conditions</label>
+                            <textarea class="form-control" id="terms_and_conditions" name="terms_and_conditions" 
+                                      rows="6">{{ settings.terms_and_conditions }}</textarea>
+                            <div class="form-text">These terms will appear on invoices and promotion pages.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Settings -->
+            <div class="col-lg-4">
+                <!-- Pricing Settings -->
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-transparent">
+                        <h6 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Pricing Settings</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="daily_rate" class="form-label">Daily Rate (USD)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="daily_rate" name="daily_rate" 
+                                       value="{{ settings.daily_rate }}" min="1" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="min_budget" class="form-label">Minimum Budget</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="min_budget" name="min_budget" 
+                                       value="{{ settings.min_budget }}" min="1" step="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="max_budget" class="form-label">Maximum Budget</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="max_budget" name="max_budget" 
+                                       value="{{ settings.max_budget }}" min="1" step="1" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approval Settings -->
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-transparent">
+                        <h6 class="mb-0"><i class="fas fa-check me-2"></i>Approval Settings</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="auto_approve_under" class="form-label">Auto-approve under</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="auto_approve_under" name="auto_approve_under" 
+                                       value="{{ settings.auto_approve_under }}" min="0" step="1">
+                            </div>
+                            <div class="form-text">Campaigns under this amount will be auto-approved</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="require_manual_review" 
+                                       name="require_manual_review" 
+                                       {% if settings.require_manual_review %}checked{% endif %}>
+                                <label class="form-check-label" for="require_manual_review">
+                                    Require manual review for all campaigns
+                                </label>
+                            </div>
+                            <div class="form-text">When enabled, all campaigns need admin approval</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Management -->
+                <div class="card border-0 shadow mb-4">
+                    <div class="card-header bg-transparent">
+                        <h6 class="mb-0"><i class="fas fa-share-alt me-2"></i>Platforms</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for platform in platforms %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <i class="{{ platform.icon_class }} me-2"></i>
+                                {{ platform.name }}
+                            </div>
+                            <span class="badge {% if platform.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if platform.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                        {% endfor %}
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Platform management coming soon
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

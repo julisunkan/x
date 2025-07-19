@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Create Promotion - {{ app_settings.app_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <h2><i class="fas fa-plus me-2"></i>Create Promotion Campaign</h2>
+                    <p class="text-muted mb-0">Promote your social media account and grow your audience</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('promotions.create_promotion') }}">
+                        {{ csrf_token() }}
+                        
+                        <!-- Campaign Title -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Campaign Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="e.g., Follow my Instagram for daily content" required>
+                            <div class="form-text">Give your campaign a descriptive title</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" 
+                                      placeholder="Describe what users will find on your social media..."></textarea>
+                        </div>
+
+                        <!-- Social URL -->
+                        <div class="mb-3">
+                            <label for="social_url" class="form-label">Social Media URL *</label>
+                            <input type="url" class="form-control" id="social_url" name="social_url" 
+                                   placeholder="https://instagram.com/yourusername" required>
+                            <div class="form-text">Enter the full URL to your social media profile or post</div>
+                        </div>
+
+                        <!-- Platform -->
+                        <div class="mb-3">
+                            <label for="platform_id" class="form-label">Platform *</label>
+                            <select class="form-select" id="platform_id" name="platform_id" required>
+                                <option value="">Select platform...</option>
+                                {% for platform in platforms %}
+                                <option value="{{ platform.id }}">
+                                    {{ platform.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Promotion Type -->
+                        <div class="mb-3">
+                            <label for="promotion_type_id" class="form-label">Promotion Type *</label>
+                            <select class="form-select" id="promotion_type_id" name="promotion_type_id" required>
+                                <option value="">Select promotion type...</option>
+                                {% for promo_type in promo_types %}
+                                <option value="{{ promo_type.id }}">
+                                    {{ promo_type.name }}
+                                    {% if promo_type.description %}
+                                    - {{ promo_type.description }}
+                                    {% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Budget -->
+                        <div class="mb-4">
+                            <label for="budget" class="form-label">Budget (USD) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="budget" name="budget" 
+                                       min="{{ settings.min_budget }}" max="{{ settings.max_budget }}" 
+                                       step="5" value="{{ settings.min_budget }}" required>
+                            </div>
+                            <div class="form-text">
+                                Budget range: ${{ settings.min_budget }} - ${{ settings.max_budget }}
+                                ({{ "$%.0f = %d day"|format(settings.daily_rate, 1) }})
+                            </div>
+                            <div id="duration-display" class="mt-2">
+                                <span class="badge bg-info">Duration: <span id="calculated-days">1</span> day(s)</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Create Campaign
+                            </button>
+                            <a href="{{ url_for('promotions.promotions_dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <!-- Pricing Info -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Pricing</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h4 class="text-primary">${{ settings.daily_rate }}</h4>
+                        <small class="text-muted">per day</small>
+                    </div>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>${{ settings.min_budget }} minimum</li>
+                        <li><i class="fas fa-check text-success me-2"></i>${{ settings.max_budget }} maximum</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Automatic calculation</li>
+                    </ul>
+                    
+                    <h6 class="mt-4">Examples:</h6>
+                    <ul class="list-unstyled small">
+                        <li>$5 = 1 day</li>
+                        <li>$25 = 5 days</li>
+                        <li>$50 = 10 days</li>
+                        <li>$100 = 20 days</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Available Platforms -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0"><i class="fas fa-share-alt me-2"></i>Available Platforms</h6>
+                </div>
+                <div class="card-body">
+                    {% for platform in platforms %}
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="{{ platform.icon_class }} me-2"></i>
+                        <span>{{ platform.name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Process Info -->
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>How It Works</h6>
+                </div>
+                <div class="card-body">
+                    <ol class="list-unstyled">
+                        <li><span class="badge bg-primary rounded-pill me-2">1</span>Create campaign</li>
+                        <li><span class="badge bg-primary rounded-pill me-2">2</span>Receive invoice</li>
+                        <li><span class="badge bg-primary rounded-pill me-2">3</span>Make payment</li>
+                        <li><span class="badge bg-primary rounded-pill me-2">4</span>Upload proof</li>
+                        <li><span class="badge bg-primary rounded-pill me-2">5</span>Campaign goes live</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Budget calculator
+document.getElementById('budget').addEventListener('input', function() {
+    const budget = parseFloat(this.value) || 0;
+    const dailyRate = {{ settings.daily_rate }};
+    const days = Math.max(1, Math.floor(budget / dailyRate));
+    document.getElementById('calculated-days').textContent = days;
+});
+</script>
+{% endblock %}

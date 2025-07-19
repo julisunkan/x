@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}{{ promotion.title }} - Promotion Campaign{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h2><i class="fas fa-megaphone me-2"></i>{{ promotion.title }}</h2>
+                            <p class="text-muted mb-0">Invoice #{{ promotion.invoice_number }}</p>
+                        </div>
+                        <div class="text-end">
+                            {% if promotion.status == 'pending' %}
+                                <span class="badge bg-warning fs-6">Pending</span>
+                            {% elif promotion.status == 'active' %}
+                                <span class="badge bg-success fs-6">Active</span>
+                            {% elif promotion.status == 'completed' %}
+                                <span class="badge bg-info fs-6">Completed</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6">{{ promotion.status|title }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Campaign Details -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Campaign Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Platform:</strong>
+                            <div class="mt-1">
+                                <i class="{{ promotion.platform.icon_class }} me-2"></i>
+                                {{ promotion.platform.name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Promotion Type:</strong>
+                            <div class="mt-1">{{ promotion.promo_type.name }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Budget:</strong>
+                            <div class="mt-1">${{ "%.2f"|format(promotion.budget) }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Duration:</strong>
+                            <div class="mt-1">{{ promotion.days_duration }} days</div>
+                        </div>
+                    </div>
+
+                    {% if promotion.description %}
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <div class="mt-1">{{ promotion.description }}</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <strong>Social Media URL:</strong>
+                        <div class="mt-1">
+                            <a href="{{ promotion.social_url }}" target="_blank" rel="noopener">
+                                {{ promotion.social_url }} <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    {% if promotion.start_date %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Start Date:</strong>
+                            <div class="mt-1">{{ promotion.start_date.strftime('%Y-%m-%d %H:%M') }}</div>
+                        </div>
+                        {% if promotion.end_date %}
+                        <div class="col-md-6">
+                            <strong>End Date:</strong>
+                            <div class="mt-1">{{ promotion.end_date.strftime('%Y-%m-%d %H:%M') }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            {% if not promotion.is_paid %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Required</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Payment is required to activate your promotion campaign.
+                    </div>
+
+                    <!-- Payment Instructions -->
+                    <div class="mb-4">
+                        <h6>Payment Instructions:</h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                {{ settings.payment_instructions|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Payment Proof -->
+                    <div class="mb-3">
+                        <h6>Upload Payment Proof:</h6>
+                        {% if promotion.payment_proof %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check me-2"></i>Payment proof uploaded! 
+                                Waiting for admin confirmation.
+                            </div>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('promotions.upload_payment_proof', promotion_id=promotion.id) }}" 
+                                  enctype="multipart/form-data">
+                                {{ csrf_token() }}
+                                <div class="input-group">
+                                    <input type="file" class="form-control" name="payment_proof" 
+                                           accept=".png,.jpg,.jpeg,.gif,.pdf" required>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-upload me-2"></i>Upload
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    Accepted formats: PNG, JPG, JPEG, GIF, PDF (max 16MB)
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card border-0 shadow mb-4">
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Payment confirmed! 
+                        {% if promotion.status == 'active' %}
+                            Your campaign is now live.
+                        {% elif promotion.is_approved %}
+                            Your campaign will start soon.
+                        {% else %}
+                            Waiting for admin approval.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Invoice -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Invoice</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h4>${{ "%.2f"|format(promotion.budget) }}</h4>
+                        <small class="text-muted">Total Amount</small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{{ url_for('promotions.download_invoice', promotion_id=promotion.id) }}" 
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-download me-2"></i>View Invoice
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <!-- Created -->
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Campaign Created</h6>
+                                <small class="text-muted">{{ promotion.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Payment -->
+                        <div class="timeline-item {% if promotion.is_paid %}completed{% else %}pending{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Payment</h6>
+                                {% if promotion.is_paid %}
+                                    <small class="text-success">Confirmed {{ promotion.paid_at.strftime('%Y-%m-%d %H:%M') if promotion.paid_at }}</small>
+                                {% elif promotion.payment_proof %}
+                                    <small class="text-warning">Proof uploaded, pending confirmation</small>
+                                {% else %}
+                                    <small class="text-muted">Pending</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Approval -->
+                        <div class="timeline-item {% if promotion.is_approved %}completed{% else %}pending{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Approval</h6>
+                                {% if promotion.is_approved %}
+                                    <small class="text-success">Approved {{ promotion.approved_at.strftime('%Y-%m-%d %H:%M') if promotion.approved_at }}</small>
+                                {% else %}
+                                    <small class="text-muted">Pending review</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campaign Live -->
+                        <div class="timeline-item {% if promotion.status == 'active' %}completed{% elif promotion.status == 'completed' %}completed{% else %}pending{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Campaign Live</h6>
+                                {% if promotion.status == 'active' %}
+                                    <small class="text-success">{{ promotion.days_remaining }} days remaining</small>
+                                {% elif promotion.status == 'completed' %}
+                                    <small class="text-info">Campaign completed</small>
+                                {% else %}
+                                    <small class="text-muted">Waiting to start</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('promotions.promotions_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 8px;
+    bottom: -25px;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -26px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #dee2e6;
+    border: 2px solid #fff;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: #198754;
+}
+
+.timeline-item.pending .timeline-marker {
+    background: #ffc107;
+}
+</style>
+{% endblock %}

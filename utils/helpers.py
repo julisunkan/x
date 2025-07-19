@@ -2,7 +2,9 @@ import os
 import uuid
 import random
 import string
-from flask import request
+from functools import wraps
+from flask import request, flash, redirect, url_for
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
@@ -170,6 +172,16 @@ def get_status_badge_class(status):
         'inactive': 'badge-secondary'
     }
     return status_classes.get(status.lower(), 'badge-secondary')
+
+def admin_required(f):
+    """Decorator to require admin access"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash('Admin access required.', 'error')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 def send_email(to_email, subject, body, is_html=False):
     """Send email using SMTP configuration from database"""

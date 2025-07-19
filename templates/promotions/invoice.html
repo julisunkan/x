@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ promotion.invoice_number }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .company-name { font-size: 24px; font-weight: bold; color: #0d6efd; }
+        .invoice-title { font-size: 20px; margin: 20px 0; }
+        .invoice-details { margin-bottom: 30px; }
+        .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .table th, .table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .table th { background-color: #f8f9fa; }
+        .total-row { font-weight: bold; background-color: #f8f9fa; }
+        .payment-info { margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 5px; }
+        .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; }
+        @media print { body { margin: 0; } }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="company-name">{{ settings.business_name }}</div>
+        {% if settings.business_address %}
+        <div>{{ settings.business_address|nl2br }}</div>
+        {% endif %}
+        {% if settings.business_email %}
+        <div>Email: {{ settings.business_email }}</div>
+        {% endif %}
+        {% if settings.business_phone %}
+        <div>Phone: {{ settings.business_phone }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Invoice Title -->
+    <div class="invoice-title">INVOICE #{{ promotion.invoice_number }}</div>
+
+    <!-- Invoice Details -->
+    <div class="invoice-details">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <strong>Bill To:</strong><br>
+                {{ promotion.user.username }}<br>
+                {{ promotion.user.email }}
+            </div>
+            <div style="text-align: right;">
+                <strong>Invoice Date:</strong> {{ promotion.created_at.strftime('%Y-%m-%d') }}<br>
+                <strong>Due Date:</strong> {{ promotion.created_at.strftime('%Y-%m-%d') }}<br>
+                <strong>Status:</strong> 
+                {% if promotion.is_paid %}
+                    <span style="color: green;">PAID</span>
+                {% else %}
+                    <span style="color: red;">UNPAID</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaign Details -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Platform</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Rate</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>{{ promotion.title }}</strong><br>
+                    {% if promotion.description %}
+                    <small>{{ promotion.description }}</small><br>
+                    {% endif %}
+                    <small>URL: {{ promotion.social_url }}</small>
+                </td>
+                <td>{{ promotion.platform.name }}</td>
+                <td>{{ promotion.promo_type.name }}</td>
+                <td>{{ promotion.days_duration }} days</td>
+                <td>${{ "%.2f"|format(settings.daily_rate) }}/day</td>
+                <td>${{ "%.2f"|format(promotion.budget) }}</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="5" style="text-align: right;"><strong>Total Amount:</strong></td>
+                <td><strong>${{ "%.2f"|format(promotion.budget) }} USD</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Payment Information -->
+    <div class="payment-info">
+        <strong>Payment Instructions:</strong><br><br>
+        {{ settings.payment_instructions|nl2br }}
+        
+        <br><br>
+        <strong>Important:</strong> After making payment, please upload proof of payment in your promotion dashboard to activate your campaign.
+    </div>
+
+    <!-- Terms -->
+    {% if settings.terms_and_conditions %}
+    <div style="margin-top: 30px; font-size: 12px;">
+        <strong>Terms and Conditions:</strong><br>
+        {{ settings.terms_and_conditions|nl2br }}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        Generated on {{ datetime.now().strftime('%Y-%m-%d %H:%M:%S') }} UTC<br>
+        {% if settings.tax_id %}
+        Tax ID: {{ settings.tax_id }}<br>
+        {% endif %}
+        This is a computer-generated invoice.
+    </div>
+
+    <script>
+        // Auto-print when opened in new window
+        if (window.location !== window.parent.location) {
+            window.print();
+        }
+    </script>
+</body>
+</html>

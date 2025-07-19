@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Promotions - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2><i class="fas fa-megaphone me-2"></i>Promotion Management</h2>
+                            <p class="text-muted mb-0">Manage user promotion campaigns and payments</p>
+                        </div>
+                        <a href="{{ url_for('promotions.promotion_settings') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-2">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line text-primary mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Total</h5>
+                    <h3 class="text-primary">{{ stats.total }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock text-warning mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Pending</h5>
+                    <h3 class="text-warning">{{ stats.pending }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-play text-success mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Active</h5>
+                    <h3 class="text-success">{{ stats.active }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-check text-info mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Completed</h5>
+                    <h3 class="text-info">{{ stats.completed }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-credit-card text-danger mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Unpaid</h5>
+                    <h3 class="text-danger">{{ stats.pending_payment }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-dollar-sign text-success mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="card-title">Revenue</h5>
+                    <h3 class="text-success">${{ "%.0f"|format(stats.total_revenue) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('promotions.admin_promotions') }}" 
+                           class="btn {% if status_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            All
+                        </a>
+                        <a href="{{ url_for('promotions.admin_promotions', status='pending') }}" 
+                           class="btn {% if status_filter == 'pending' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                            Pending
+                        </a>
+                        <a href="{{ url_for('promotions.admin_promotions', status='active') }}" 
+                           class="btn {% if status_filter == 'active' %}btn-success{% else %}btn-outline-success{% endif %}">
+                            Active
+                        </a>
+                        <a href="{{ url_for('promotions.admin_promotions', status='completed') }}" 
+                           class="btn {% if status_filter == 'completed' %}btn-info{% else %}btn-outline-info{% endif %}">
+                            Completed
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotions List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Promotion Campaigns</h5>
+                </div>
+                <div class="card-body">
+                    {% if promotions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign</th>
+                                        <th>User</th>
+                                        <th>Platform</th>
+                                        <th>Budget</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                        <th>Payment</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for promotion in promotions %}
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <strong>{{ promotion.title }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ promotion.invoice_number }}</small>
+                                                {% if promotion.payment_proof %}
+                                                <br>
+                                                <small class="text-info">
+                                                    <i class="fas fa-paperclip"></i> Payment proof uploaded
+                                                </small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                {{ promotion.user.username }}
+                                                <br>
+                                                <small class="text-muted">{{ promotion.user.email }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <i class="{{ promotion.platform.icon_class }} me-2"></i>
+                                            {{ promotion.platform.name }}
+                                            <br>
+                                            <small class="text-muted">{{ promotion.promo_type.name }}</small>
+                                        </td>
+                                        <td>${{ "%.2f"|format(promotion.budget) }}</td>
+                                        <td>{{ promotion.days_duration }} days</td>
+                                        <td>
+                                            {% if promotion.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif promotion.status == 'active' %}
+                                                <span class="badge bg-success">Active</span>
+                                                {% if promotion.days_remaining > 0 %}
+                                                <br><small class="text-muted">{{ promotion.days_remaining }} days left</small>
+                                                {% endif %}
+                                            {% elif promotion.status == 'completed' %}
+                                                <span class="badge bg-info">Completed</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ promotion.status|title }}</span>
+                                            {% endif %}
+                                            
+                                            {% if not promotion.is_approved %}
+                                            <br><span class="badge bg-danger">Not Approved</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if promotion.is_paid %}
+                                                <span class="badge bg-success">Paid</span>
+                                                {% if promotion.paid_at %}
+                                                <br><small class="text-muted">{{ promotion.paid_at.strftime('%m/%d') }}</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge bg-danger">Unpaid</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ promotion.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                        type="button" data-bs-toggle="dropdown">
+                                                    Actions
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" 
+                                                           href="{{ url_for('promotions.view_promotion', promotion_id=promotion.id) }}">
+                                                            <i class="fas fa-eye me-2"></i>View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" 
+                                                           href="{{ url_for('promotions.download_invoice', promotion_id=promotion.id) }}" 
+                                                           target="_blank">
+                                                            <i class="fas fa-file-invoice me-2"></i>View Invoice
+                                                        </a>
+                                                    </li>
+                                                    {% if promotion.payment_proof %}
+                                                    <li>
+                                                        <a class="dropdown-item" 
+                                                           href="{{ url_for('promotions.uploaded_payment_proof', filename=promotion.payment_proof) }}" 
+                                                           target="_blank">
+                                                            <i class="fas fa-file-image me-2"></i>View Payment Proof
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                    {% if not promotion.is_approved %}
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <button class="dropdown-item text-success" 
+                                                                onclick="approvePromotion({{ promotion.id }})">
+                                                            <i class="fas fa-check me-2"></i>Approve
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+                                                    {% if not promotion.is_paid %}
+                                                    <li>
+                                                        <button class="dropdown-item text-primary" 
+                                                                onclick="markPaid({{ promotion.id }})">
+                                                            <i class="fas fa-credit-card me-2"></i>Mark as Paid
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+                                                    {% if promotion.is_approved and promotion.is_paid and promotion.status == 'pending' %}
+                                                    <li>
+                                                        <button class="dropdown-item text-success" 
+                                                                onclick="startCampaign({{ promotion.id }})">
+                                                            <i class="fas fa-play me-2"></i>Start Campaign
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-megaphone fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No promotions found</h5>
+                            <p class="text-muted">Promotion campaigns will appear here when users create them.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Promotion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="approveForm" method="POST">
+                {{ csrf_token() }}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="approveNotes" class="form-label">Admin Notes (Optional)</label>
+                        <textarea class="form-control" id="approveNotes" name="admin_notes" rows="3" 
+                                  placeholder="Any notes about this approval..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Approve Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Mark Paid Modal -->
+<div class="modal fade" id="markPaidModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mark as Paid</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="markPaidForm" method="POST">
+                {{ csrf_token() }}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="paidNotes" class="form-label">Admin Notes (Optional)</label>
+                        <textarea class="form-control" id="paidNotes" name="admin_notes" rows="3" 
+                                  placeholder="Payment confirmation details..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function approvePromotion(promotionId) {
+    document.getElementById('approveForm').action = `/admin/promotions/${promotionId}/approve`;
+    new bootstrap.Modal(document.getElementById('approveModal')).show();
+}
+
+function markPaid(promotionId) {
+    document.getElementById('markPaidForm').action = `/admin/promotions/${promotionId}/mark-paid`;
+    new bootstrap.Modal(document.getElementById('markPaidModal')).show();
+}
+
+function startCampaign(promotionId) {
+    if (confirm('Start this promotion campaign now?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/promotions/${promotionId}/start`;
+        
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

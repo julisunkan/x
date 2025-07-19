@@ -102,11 +102,13 @@ from core.auth import auth_bp
 from core.mining import mining_bp
 from core.tasks import tasks_bp
 from core.admin import admin_bp
+from core.promotions import promotions_bp
 
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(mining_bp, url_prefix='/mining')
 app.register_blueprint(tasks_bp, url_prefix='/tasks')
 app.register_blueprint(admin_bp, url_prefix='/admin')
+app.register_blueprint(promotions_bp)
 
 # Routes
 @app.route('/')
@@ -255,7 +257,7 @@ def uploaded_file(filename):
 # Table Initialization + Admin User
 def create_tables():
     with app.app_context():
-        from models import user, mining, task, referral, withdrawal, airdrop
+        from models import user, mining, task, referral, withdrawal, airdrop, promotion
         db.create_all()
         from models.user import User
         from werkzeug.security import generate_password_hash
@@ -298,6 +300,52 @@ def create_tables():
         except Exception as e:
             db.session.rollback()
             logging.error(f"❌ Error updating avatars: {e}")
+
+        # Initialize promotion platforms and types
+        try:
+            from models.promotion import SocialPlatform, PromotionType
+            
+            # Create social platforms if they don't exist
+            platforms_data = [
+                {'name': 'X (Twitter)', 'icon_class': 'fab fa-x-twitter'},
+                {'name': 'Instagram', 'icon_class': 'fab fa-instagram'},
+                {'name': 'TikTok', 'icon_class': 'fab fa-tiktok'},
+                {'name': 'YouTube', 'icon_class': 'fab fa-youtube'},
+                {'name': 'Facebook', 'icon_class': 'fab fa-facebook'},
+                {'name': 'LinkedIn', 'icon_class': 'fab fa-linkedin'},
+                {'name': 'Telegram', 'icon_class': 'fab fa-telegram'},
+                {'name': 'Website', 'icon_class': 'fas fa-globe'},
+            ]
+            
+            for platform_data in platforms_data:
+                existing_platform = SocialPlatform.query.filter_by(name=platform_data['name']).first()
+                if not existing_platform:
+                    platform = SocialPlatform(**platform_data)
+                    db.session.add(platform)
+            
+            # Create promotion types if they don't exist
+            promo_types_data = [
+                {'name': 'Visit', 'description': 'Visit your profile or website'},
+                {'name': 'Follow', 'description': 'Follow your account'},
+                {'name': 'Like', 'description': 'Like your posts'},
+                {'name': 'Share', 'description': 'Share your content'},
+                {'name': 'Subscribe', 'description': 'Subscribe to your channel'},
+                {'name': 'Comment', 'description': 'Comment on your posts'},
+                {'name': 'Engage', 'description': 'General engagement with your content'},
+            ]
+            
+            for promo_type_data in promo_types_data:
+                existing_type = PromotionType.query.filter_by(name=promo_type_data['name']).first()
+                if not existing_type:
+                    promo_type = PromotionType(**promo_type_data)
+                    db.session.add(promo_type)
+            
+            db.session.commit()
+            logging.info("✅ Promotion platforms and types initialized.")
+            
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"❌ Error initializing promotion data: {e}")
 
 # Run setup
 create_tables()

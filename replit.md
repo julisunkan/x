@@ -10,6 +10,8 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **Complete Social Media Promotion System (July 19, 2025)**: Implemented comprehensive promotion platform allowing users to promote their social media accounts, websites, and content. Features include campaign creation, invoice generation, payment tracking, admin approval workflow, and flexible pricing ($5 per day). Supports multiple platforms (X, Instagram, TikTok, YouTube, etc.) and promotion types (visit, follow, like, share). Added navigation links and admin management interface with campaign statistics and payment processing.
+
 - **Complete Rebranding to DigitalSkeletonCoin (DSC) (July 19, 2025)**: Changed all occurrences of "RoseCoin" to "DigitalSkeletonCoin (DSC)" throughout the entire platform. Updated database configuration, admin user setup, JavaScript classes, HTML templates, manifest files, and documentation. Fixed JavaScript class name references and PWA metadata. Platform now fully branded as DigitalSkeletonCoin (DSC).
 
 - **Email Verification & Password Reset Removal (July 17, 2025)**: Completely removed email verification and password reset functionality. Users can now register and login immediately without email verification. Email addresses are still collected for airdrop/task notifications. Updated registration form to inform users about valid email importance. Simplified admin panel by removing email verification features.
@@ -61,6 +63,7 @@ The application uses SQLAlchemy with a well-structured relational model:
 - **Referrals**: Multi-level referral system with earnings tracking
 - **Withdrawals**: Payment processing with admin approval workflow
 - **Airdrops**: Event-based coin distribution system
+- **Promotions**: Social media promotion campaigns with platform/type relationships, invoice generation, payment tracking, and admin approval workflow
 
 ## Key Components
 
@@ -88,6 +91,14 @@ The application uses SQLAlchemy with a well-structured relational model:
    - Withdrawal processing
    - Airdrop management
    - Platform settings configuration
+
+5. **Promotion System** (`core/promotions.py`)
+   - Campaign creation and management
+   - Multi-platform support (X, Instagram, TikTok, YouTube, etc.)
+   - Flexible promotion types (visit, follow, like, share, etc.)
+   - Invoice generation and payment tracking
+   - Admin approval and management workflow
+   - Payment proof upload and verification
 
 ### Gaming Features
 - **Level System**: XP-based progression affecting mining rewards
