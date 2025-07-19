@@ -233,6 +233,14 @@ def admin_promotions():
 @admin_required
 def approve_promotion(promotion_id):
     """Approve promotion campaign"""
+    # Validate CSRF token
+    from flask_wtf.csrf import validate_csrf
+    try:
+        validate_csrf(request.form.get('csrf_token'))
+    except Exception:
+        flash('Security token invalid. Please try again.', 'error')
+        return redirect(url_for('promotions.admin_promotions'))
+        
     promotion = SocialPromotion.query.get_or_404(promotion_id)
     
     promotion.is_approved = True
@@ -252,6 +260,14 @@ def approve_promotion(promotion_id):
 @admin_required
 def mark_promotion_paid(promotion_id):
     """Mark promotion as paid"""
+    # Validate CSRF token
+    from flask_wtf.csrf import validate_csrf
+    try:
+        validate_csrf(request.form.get('csrf_token'))
+    except Exception:
+        flash('Security token invalid. Please try again.', 'error')
+        return redirect(url_for('promotions.admin_promotions'))
+        
     promotion = SocialPromotion.query.get_or_404(promotion_id)
     
     promotion.mark_as_paid()
@@ -270,6 +286,14 @@ def mark_promotion_paid(promotion_id):
 @admin_required
 def start_promotion(promotion_id):
     """Start promotion campaign"""
+    # Validate CSRF token
+    from flask_wtf.csrf import validate_csrf
+    try:
+        validate_csrf(request.form.get('csrf_token'))
+    except Exception:
+        flash('Security token invalid. Please try again.', 'error')
+        return redirect(url_for('promotions.admin_promotions'))
+        
     promotion = SocialPromotion.query.get_or_404(promotion_id)
     
     if not promotion.is_approved:
@@ -294,6 +318,14 @@ def promotion_settings():
     settings = PromotionSettings.get_settings()
     
     if request.method == 'POST':
+        # Validate CSRF token
+        from flask_wtf.csrf import validate_csrf
+        try:
+            validate_csrf(request.form.get('csrf_token'))
+        except Exception:
+            flash('Security token invalid. Please try again.', 'error')
+            return redirect(url_for('promotions.promotion_settings'))
+            
         try:
             # Update settings
             settings.payment_instructions = request.form.get('payment_instructions', '')
