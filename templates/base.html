@@ -472,13 +472,13 @@
             }
             
             .main-content {
-                padding-top: 140px;
+                padding-top: 20px;
             }
         }
         
-        /* User Navigation Menu Styles */
+        /* User Navigation Menu Styles - Fixed position with scroll */
         .user-nav {
-            position: fixed;
+            position: sticky;
             top: 70px;
             left: 0;
             right: 0;
@@ -488,6 +488,7 @@
             border-bottom: 1px solid rgba(99, 102, 241, 0.1);
             padding: 15px 0;
             box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-top: 0;
         }
         
         .user-nav-grid {
@@ -580,11 +581,11 @@
             transform: scale(1.1);
         }
         
-        /* Update main content padding */
+        /* Update main content padding - reduced since nav is now sticky */
         .main-content {
-            padding-top: 160px;
+            padding-top: 20px;
             padding-bottom: 20px;
-            min-height: calc(100vh - 160px);
+            min-height: calc(100vh - 70px);
         }
         
         /* Responsive adjustments */
@@ -608,7 +609,7 @@
             }
             
             .main-content {
-                padding-top: 145px;
+                padding-top: 20px;
             }
         }
         
@@ -932,7 +933,7 @@
                 <span>Dashboard</span>
             </a>
             <a class="user-nav-item" href="{{ url_for('mining.mining_page') }}">
-                <i class="fas fa-pickaxe"></i>
+                <i class="fas fa-hammer"></i>
                 <span>Mine</span>
             </a>
             <a class="user-nav-item" href="{{ url_for('tasks.tasks_page') }}">
@@ -940,7 +941,7 @@
                 <span>Tasks</span>
             </a>
             <a class="user-nav-item" href="{{ url_for('promotions.promotions_dashboard') }}">
-                <i class="fas fa-megaphone"></i>
+                <i class="fas fa-bullhorn"></i>
                 <span>Promotions</span>
             </a>
             <a class="user-nav-item" href="{{ url_for('referrals') }}">
