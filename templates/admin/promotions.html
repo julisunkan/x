@@ -157,10 +157,10 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <i class="{{ promotion.platform.icon_class }} me-2"></i>
-                                            {{ promotion.platform.name }}
+                                            <i class="{{ promotion.social_platform.icon_class }} me-2"></i>
+                                            {{ promotion.social_platform.name }}
                                             <br>
-                                            <small class="text-muted">{{ promotion.promo_type.name }}</small>
+                                            <small class="text-muted">{{ promotion.promotion_type.name }}</small>
                                         </td>
                                         <td>${{ "%.2f"|format(promotion.budget) }}</td>
                                         <td>{{ promotion.days_duration }} days</td>

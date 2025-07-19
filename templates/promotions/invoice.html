@@ -78,8 +78,8 @@
                     {% endif %}
                     <small>URL: {{ promotion.social_url }}</small>
                 </td>
-                <td>{{ promotion.platform.name }}</td>
-                <td>{{ promotion.promo_type.name }}</td>
+                <td>{{ promotion.social_platform.name }}</td>
+                <td>{{ promotion.promotion_type.name }}</td>
                 <td>{{ promotion.days_duration }} days</td>
                 <td>${{ "%.2f"|format(settings.daily_rate) }}/day</td>
                 <td>${{ "%.2f"|format(promotion.budget) }}</td>

@@ -12,7 +12,7 @@ class SocialPlatform(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
-    promotions = db.relationship('SocialPromotion', backref='platform', lazy=True)
+    promotions = db.relationship('SocialPromotion', backref='social_platform', lazy=True)
     
     def __repr__(self):
         return f'<SocialPlatform {self.name}>'
@@ -26,7 +26,7 @@ class PromotionType(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
-    promotions = db.relationship('SocialPromotion', backref='promo_type', lazy=True)
+    promotions = db.relationship('SocialPromotion', backref='promotion_type', lazy=True)
     
     def __repr__(self):
         return f'<PromotionType {self.name}>'
@@ -44,6 +44,9 @@ class SocialPromotion(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     platform_id = db.Column(db.Integer, db.ForeignKey('social_platform.id'), nullable=False)
     promotion_type_id = db.Column(db.Integer, db.ForeignKey('promotion_type.id'), nullable=False)
+    
+    # Relationships
+    user = db.relationship('User', backref='user_promotions', lazy='joined')
     
     # Budget and duration
     budget = db.Column(db.Float, nullable=False)  # Budget in USD
