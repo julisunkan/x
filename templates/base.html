@@ -424,6 +424,42 @@
             box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
+        /* Mobile-first optimizations */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        body {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        /* Improve button touch targets */
+        .btn {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Better form controls for mobile */
+        .form-control, .form-select {
+            min-height: 44px;
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        /* Card optimizations for mobile */
+        .card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+        
+        /* Alert optimizations */
+        .alert {
+            margin-bottom: 15px;
+            border-radius: 12px;
+        }
+        
         .app-footer .container {
             max-width: 1200px;
         }
@@ -489,6 +525,8 @@
             padding: 15px 0;
             box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             margin-top: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .user-nav-grid {
@@ -498,6 +536,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            min-width: max-content;
         }
         
         .user-nav-item {
@@ -512,6 +551,10 @@
             transition: all 0.3s ease;
             font-weight: 600;
             font-size: 0.85rem;
+            min-height: 75px;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         
         .user-nav-item:hover {
@@ -562,6 +605,10 @@
             transition: all 0.3s ease;
             font-weight: 600;
             font-size: 0.85rem;
+            min-height: 75px;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         
         .admin-nav-item:hover {
@@ -592,45 +639,164 @@
         @media (max-width: 768px) {
             .user-nav-grid,
             .admin-nav-grid {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
                 gap: 8px;
                 padding: 0 15px;
             }
             
             .user-nav-item,
             .admin-nav-item {
-                padding: 10px 6px;
+                padding: 12px 8px;
                 font-size: 0.8rem;
+                min-height: 70px;
             }
             
             .user-nav-item i,
             .admin-nav-item i {
-                font-size: 1.3rem;
+                font-size: 1.4rem;
             }
             
             .main-content {
-                padding-top: 145px;
+                padding-top: 150px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            /* Improve touch targets */
+            .user-nav-item:hover,
+            .admin-nav-item:hover {
+                transform: none;
+                background: rgba(99, 102, 241, 0.15);
+            }
+            
+            .admin-nav-item:hover {
+                background: rgba(220, 38, 38, 0.15);
             }
         }
         
         @media (max-width: 576px) {
             .user-nav-grid,
             .admin-nav-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 6px;
-                padding: 0 10px;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+                padding: 0 8px;
             }
             
             .user-nav-item,
             .admin-nav-item {
-                padding: 8px 4px;
-                font-size: 0.75rem;
+                padding: 10px 6px;
+                font-size: 0.7rem;
+                min-height: 60px;
+                justify-content: center;
+            }
+            
+            .user-nav-item i,
+            .admin-nav-item i {
+                font-size: 1.4rem;
+                margin-bottom: 2px;
             }
             
             .user-nav-item span,
             .admin-nav-item span {
-                display: none;
+                font-size: 0.65rem;
+                line-height: 1.1;
+                text-align: center;
+                font-weight: 700;
             }
+            
+            /* Mobile-specific header adjustments */
+            .app-header {
+                padding: 8px 15px;
+                height: 60px;
+            }
+            
+            .app-header .brand {
+                font-size: 1rem;
+            }
+            
+            .app-header .brand i {
+                font-size: 1.2rem;
+            }
+            
+            .user-info {
+                gap: 8px;
+            }
+            
+            .user-info .badge {
+                font-size: 0.7rem;
+                padding: 4px 6px;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+            }
+            
+            /* Adjust user nav position for smaller header */
+            .user-nav {
+                top: 60px;
+                padding: 10px 0;
+            }
+            
+            .main-content {
+                padding-top: 130px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            /* Mobile content optimizations */
+            .container-fluid {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            .card {
+                margin-bottom: 15px;
+                border-radius: 12px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                border-radius: 10px;
+            }
+            
+            .form-control, .form-select {
+                padding: 12px 15px;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+            
+            .modal-dialog {
+                margin: 10px;
+                max-width: calc(100vw - 20px);
+            }
+            
+            /* Mining button mobile optimization */
+            .mining-button {
+                width: 100%;
+                min-height: 60px;
+                font-size: 1.1rem !important;
+                margin: 15px 0;
+            }
+            
+            /* Balance and stats cards */
+            .balance-card, .stats-card {
+                text-align: center;
+                padding: 20px 15px;
+            }
+            
+            /* Responsive text sizes */
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.3rem; }
+            h4 { font-size: 1.1rem; }
+            h5 { font-size: 1rem; }
+            h6 { font-size: 0.9rem; }
         }
         
         /* Mobile Navigation Toggle */
