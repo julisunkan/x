@@ -476,6 +476,162 @@
             }
         }
         
+        /* User Navigation Menu Styles */
+        .user-nav {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 1025;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 15px 0;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .user-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .user-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 8px;
+            text-decoration: none;
+            color: #6b7280;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .user-nav-item:hover {
+            color: var(--bs-primary);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .user-nav-item i {
+            font-size: 1.5rem;
+            color: #9ca3af;
+            transition: all 0.3s ease;
+        }
+        
+        .user-nav-item:hover i {
+            color: var(--bs-primary);
+            transform: scale(1.1);
+        }
+        
+        /* Admin Navigation Menu Styles (Above Footer) */
+        .admin-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 15px 0;
+            box-shadow: 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 0;
+        }
+        
+        .admin-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .admin-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 8px;
+            text-decoration: none;
+            color: #6b7280;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .admin-nav-item:hover {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .admin-nav-item i {
+            font-size: 1.5rem;
+            color: #9ca3af;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-nav-item:hover i {
+            color: #dc2626;
+            transform: scale(1.1);
+        }
+        
+        /* Update main content padding */
+        .main-content {
+            padding-top: 160px;
+            padding-bottom: 20px;
+            min-height: calc(100vh - 160px);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .user-nav-grid,
+            .admin-nav-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 8px;
+                padding: 0 15px;
+            }
+            
+            .user-nav-item,
+            .admin-nav-item {
+                padding: 10px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .user-nav-item i,
+            .admin-nav-item i {
+                font-size: 1.3rem;
+            }
+            
+            .main-content {
+                padding-top: 145px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .user-nav-grid,
+            .admin-nav-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+                padding: 0 10px;
+            }
+            
+            .user-nav-item,
+            .admin-nav-item {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+            
+            .user-nav-item span,
+            .admin-nav-item span {
+                display: none;
+            }
+        }
+        
         /* Mobile Navigation Toggle */
         .mobile-nav-toggle {
             display: none;
@@ -767,204 +923,64 @@
         {% endif %}
     </header>
     
-    <!-- Top Navigation -->
+    <!-- User Navigation Menu (Below Header) -->
     {% if current_user.is_authenticated %}
-    <nav class="top-nav">
-        <div class="nav-container">
-            <div class="quick-nav">
-                <a class="nav-link" href="{{ url_for('dashboard') }}">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a class="nav-link" href="{{ url_for('mining.mining_page') }}">
-                    <i class="fas fa-pickaxe"></i>
-                    <span>Mine</span>
-                </a>
-                <a class="nav-link" href="{{ url_for('tasks.tasks_page') }}">
-                    <i class="fas fa-tasks"></i>
-                    <span>Tasks</span>
-                </a>
-                <a class="nav-link" href="{{ url_for('promotions.promotions_dashboard') }}">
-                    <i class="fas fa-megaphone"></i>
-                    <span>Promotions</span>
-                </a>
-            </div>
-            
-            <div class="nav-dropdown-menu">
-                <button class="nav-dropdown-btn" id="main-menu-btn">
-                    <i class="fas fa-th-large"></i>
-                    <span>More</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="nav-dropdown-content" id="main-menu-dropdown">
-                    <a class="nav-link" href="{{ url_for('referrals') }}">
-                        <i class="fas fa-users"></i>
-                        <span>Referrals</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('withdrawals') }}">
-                        <i class="fas fa-wallet"></i>
-                        <span>Withdrawals</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('airdrops') }}">
-                        <i class="fas fa-gift"></i>
-                        <span>Airdrops</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('profile') }}">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </div>
-            
-            {% if current_user.is_admin %}
-            <div class="nav-dropdown-menu">
-                <button class="nav-dropdown-btn" id="admin-menu-btn">
-                    <i class="fas fa-cog"></i>
-                    <span>Admin</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="nav-dropdown-content" id="admin-menu-dropdown">
-                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.users') }}">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Manage Users</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.tasks') }}">
-                        <i class="fas fa-list-check"></i>
-                        <span>Manage Tasks</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('promotions.admin_promotions') }}">
-                        <i class="fas fa-megaphone"></i>
-                        <span>Manage Promotions</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.task_completions') }}">
-                        <i class="fas fa-clipboard-check"></i>
-                        <span>Review Submissions</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.withdrawals') }}">
-                        <i class="fas fa-money-check-alt"></i>
-                        <span>Manage Withdrawals</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.airdrops') }}">
-                        <i class="fas fa-parachute-box"></i>
-                        <span>Manage Airdrops</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.settings') }}">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
-                    <a class="nav-link" href="{{ url_for('admin.database_management') }}">
-                        <i class="fas fa-database"></i>
-                        <span>Database</span>
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-            
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <div class="mobile-nav-dropdown" id="mobile-nav-dropdown">
-            <a class="nav-link" href="{{ url_for('dashboard') }}">
+    <nav class="user-nav">
+        <div class="user-nav-grid">
+            <a class="user-nav-item" href="{{ url_for('dashboard') }}">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
-            <a class="nav-link" href="{{ url_for('mining.mining_page') }}">
+            <a class="user-nav-item" href="{{ url_for('mining.mining_page') }}">
                 <i class="fas fa-pickaxe"></i>
                 <span>Mine</span>
             </a>
-            <a class="nav-link" href="{{ url_for('tasks.tasks_page') }}">
+            <a class="user-nav-item" href="{{ url_for('tasks.tasks_page') }}">
                 <i class="fas fa-tasks"></i>
                 <span>Tasks</span>
             </a>
-            <a class="nav-link" href="{{ url_for('promotions.promotions_dashboard') }}">
+            <a class="user-nav-item" href="{{ url_for('promotions.promotions_dashboard') }}">
                 <i class="fas fa-megaphone"></i>
                 <span>Promotions</span>
             </a>
-            <a class="nav-link" href="{{ url_for('referrals') }}">
+            <a class="user-nav-item" href="{{ url_for('referrals') }}">
                 <i class="fas fa-users"></i>
                 <span>Referrals</span>
             </a>
-            <a class="nav-link" href="{{ url_for('withdrawals') }}">
+            <a class="user-nav-item" href="{{ url_for('withdrawals') }}">
                 <i class="fas fa-wallet"></i>
                 <span>Withdrawals</span>
             </a>
-            <a class="nav-link" href="{{ url_for('airdrops') }}">
+            <a class="user-nav-item" href="{{ url_for('airdrops') }}">
                 <i class="fas fa-gift"></i>
                 <span>Airdrops</span>
             </a>
-            <a class="nav-link" href="{{ url_for('profile') }}">
+            <a class="user-nav-item" href="{{ url_for('profile') }}">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </a>
-            
-            {% if current_user.is_admin %}
-            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-                <i class="fas fa-chart-line"></i>
-                <span>Admin Dashboard</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('admin.users') }}">
-                <i class="fas fa-users-cog"></i>
-                <span>Manage Users</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('admin.tasks') }}">
-                <i class="fas fa-list-check"></i>
-                <span>Manage Tasks</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('promotions.admin_promotions') }}">
-                <i class="fas fa-megaphone"></i>
-                <span>Manage Promotions</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('admin.withdrawals') }}">
-                <i class="fas fa-money-check-alt"></i>
-                <span>Manage Withdrawals</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('admin.airdrops') }}">
-                <i class="fas fa-parachute-box"></i>
-                <span>Manage Airdrops</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('admin.settings') }}">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
-            </a>
-            <a class="nav-link" href="{{ url_for('admin.database_management') }}">
-                <i class="fas fa-database"></i>
-                <span>Database</span>
-            </a>
-            {% endif %}
-            
-            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+            <a class="user-nav-item" href="{{ url_for('auth.logout') }}">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
         </div>
+
     </nav>
     {% else %}
-    <nav class="top-nav">
-        <div class="nav-container">
-            <div class="quick-nav">
-                <a class="nav-link" href="{{ url_for('index') }}">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-                <a class="nav-link" href="{{ url_for('auth.login') }}">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Login</span>
-                </a>
-                <a class="nav-link" href="{{ url_for('auth.register') }}">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Register</span>
-                </a>
-            </div>
+    <nav class="user-nav">
+        <div class="user-nav-grid">
+            <a class="user-nav-item" href="{{ url_for('index') }}">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a class="user-nav-item" href="{{ url_for('auth.login') }}">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+            <a class="user-nav-item" href="{{ url_for('auth.register') }}">
+                <i class="fas fa-user-plus"></i>
+                <span>Register</span>
+            </a>
         </div>
     </nav>
     {% endif %}
@@ -987,6 +1003,50 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <!-- Admin Navigation Menu (Above Footer) -->
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <nav class="admin-nav">
+        <div class="admin-nav-grid">
+            <a class="admin-nav-item" href="{{ url_for('admin.dashboard') }}">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.users') }}">
+                <i class="fas fa-users-cog"></i>
+                <span>Manage Users</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.tasks') }}">
+                <i class="fas fa-list-check"></i>
+                <span>Manage Tasks</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('promotions.admin_promotions') }}">
+                <i class="fas fa-bullhorn"></i>
+                <span>Manage Promotions</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.task_completions') }}">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Review Submissions</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.withdrawals') }}">
+                <i class="fas fa-money-check-alt"></i>
+                <span>Manage Withdrawals</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.airdrops') }}">
+                <i class="fas fa-parachute-box"></i>
+                <span>Manage Airdrops</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.settings') }}">
+                <i class="fas fa-cogs"></i>
+                <span>Settings</span>
+            </a>
+            <a class="admin-nav-item" href="{{ url_for('admin.database_management') }}">
+                <i class="fas fa-database"></i>
+                <span>Database</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
 
     <!-- Footer -->
     <footer class="app-footer">
