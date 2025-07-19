@@ -131,18 +131,12 @@
         
         /* Modern Header Styles */
         .app-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1030;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-            height: 70px;
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            padding: 15px 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
@@ -623,11 +617,11 @@
             transform: scale(1.1);
         }
         
-        /* Update main content padding - only account for header now */
+        /* Update main content padding - no fixed header now */
         .main-content {
-            padding-top: 90px;
+            padding-top: 20px;
             padding-bottom: 20px;
-            min-height: calc(100vh - 90px);
+            min-height: calc(100vh - 40px);
         }
         
         /* Responsive adjustments */
@@ -652,7 +646,7 @@
             }
             
             .main-content {
-                padding-top: 85px;
+                padding-top: 20px;
                 padding-left: 15px;
                 padding-right: 15px;
             }
@@ -701,8 +695,7 @@
             
             /* Mobile-specific header adjustments */
             .app-header {
-                padding: 8px 15px;
-                height: 60px;
+                padding: 10px 15px;
             }
             
             .app-header .brand {
@@ -728,7 +721,7 @@
             }
             
             .main-content {
-                padding-top: 75px;
+                padding-top: 15px;
                 padding-left: 10px;
                 padding-right: 10px;
             }
