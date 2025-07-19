@@ -97,6 +97,15 @@ def inject_app_settings():
     from models.settings import AppSettings
     return dict(app_settings=AppSettings.get_settings())
 
+# Custom Jinja2 filters
+@app.template_filter('nl2br')
+def nl2br_filter(text):
+    """Convert newlines to HTML line breaks"""
+    if not text:
+        return text
+    from markupsafe import Markup
+    return Markup(text.replace('\n', '<br>\n'))
+
 # Blueprints
 from core.auth import auth_bp
 from core.mining import mining_bp

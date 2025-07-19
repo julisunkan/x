@@ -130,7 +130,7 @@
                         {% else %}
                             <form method="POST" action="{{ url_for('promotions.upload_payment_proof', promotion_id=promotion.id) }}" 
                                   enctype="multipart/form-data">
-                                {{ csrf_token() }}
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <div class="input-group">
                                     <input type="file" class="form-control" name="payment_proof" 
                                            accept=".png,.jpg,.jpeg,.gif,.pdf" required>
