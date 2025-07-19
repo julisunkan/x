@@ -413,6 +413,69 @@
             }
         }
         
+        /* Modern Footer Styles */
+        .app-footer {
+            position: relative;
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 40px 0 20px;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .app-footer .container {
+            max-width: 1200px;
+        }
+        
+        .app-footer h6 {
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        
+        .app-footer .text-muted {
+            color: #6b7280 !important;
+        }
+        
+        .app-footer small {
+            color: #9ca3af !important;
+            font-weight: 500;
+        }
+        
+        /* Main content adjustment */
+        .main-content {
+            padding-top: 150px;
+            padding-bottom: 20px;
+            min-height: calc(100vh - 130px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Responsive footer adjustments */
+        @media (max-width: 768px) {
+            .app-footer {
+                padding: 30px 0 15px;
+            }
+            
+            .app-footer h6 {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .app-footer {
+                padding: 25px 0 15px;
+            }
+            
+            .main-content {
+                padding-top: 140px;
+            }
+        }
+        
         /* Mobile Navigation Toggle */
         .mobile-nav-toggle {
             display: none;
@@ -514,48 +577,9 @@
             display: block;
         }
         
-        .main-content {
-            margin-left: 0;
-            margin-top: 130px;
-            min-height: calc(100vh - 130px - 120px);
-            padding: 20px;
-            padding-bottom: 140px;
-        }
+
         
-        /* Footer Styles */
-        .app-footer {
-            background: var(--bs-dark);
-            color: white;
-            padding: 40px 0 20px;
-            margin-top: auto;
-            border-top: 1px solid var(--bs-gray-700);
-            position: relative;
-            z-index: 1000;
-            margin-left: 0;
-        }
-        
-        .app-footer h6 {
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .app-footer .social-links a {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
-        }
-        
-        .app-footer .social-links a:hover {
-            color: var(--bs-primary);
-        }
-        
-        .app-footer ul li {
-            margin-bottom: 8px;
-        }
-        
-        .app-footer ul li a:hover {
-            color: var(--bs-primary) !important;
-        }
+
         
         .nav-section {
             padding: 15px 20px 8px;
@@ -707,10 +731,7 @@
                 font-size: 0.7rem;
             }
             
-            .app-footer {
-                margin-left: 0;
-                padding: 30px 0 15px;
-            }
+
         }
         
 
