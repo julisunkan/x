@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_from_directory, make_response
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -8,6 +8,8 @@ from models.promotion import SocialPromotion, SocialPlatform, PromotionType, Pro
 from models.user import User
 from utils.helpers import admin_required
 import uuid
+import io
+from weasyprint import HTML, CSS
 
 promotions_bp = Blueprint('promotions', __name__)
 
@@ -171,7 +173,35 @@ def download_invoice(promotion_id):
         return redirect(url_for('promotions.promotions_dashboard'))
     
     settings = PromotionSettings.get_settings()
-    return render_template('promotions/invoice.html', promotion=promotion, settings=settings)
+    from datetime import datetime as dt
+    
+    # Generate HTML content
+    html_content = render_template('promotions/invoice.html', 
+                                 promotion=promotion, 
+                                 settings=settings,
+                                 datetime=dt)
+    
+    # Convert HTML to PDF
+    try:
+        # Create PDF from HTML
+        pdf_buffer = io.BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_buffer.seek(0)
+        
+        # Create response with PDF
+        response = make_response(pdf_buffer.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=invoice_{promotion.invoice_number}.pdf'
+        
+        return response
+        
+    except Exception as e:
+        # Fallback to HTML if PDF generation fails
+        flash(f'PDF generation failed, showing HTML version. Error: {str(e)}', 'warning')
+        return render_template('promotions/invoice.html', 
+                             promotion=promotion, 
+                             settings=settings,
+                             datetime=dt)
 
 @promotions_bp.route('/admin/promotions')
 @login_required
