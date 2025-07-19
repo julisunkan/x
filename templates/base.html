@@ -512,19 +512,14 @@
             }
         }
         
-        /* User Navigation Menu Styles - Fixed position with scroll */
+        /* User Navigation Menu Styles - Now in footer area */
         .user-nav {
-            position: sticky;
-            top: 70px;
-            left: 0;
-            right: 0;
-            z-index: 1025;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
             padding: 15px 0;
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-top: 0;
+            box-shadow: 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 0;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -628,11 +623,11 @@
             transform: scale(1.1);
         }
         
-        /* Update main content padding - account for header + sticky nav */
+        /* Update main content padding - only account for header now */
         .main-content {
-            padding-top: 160px;
+            padding-top: 90px;
             padding-bottom: 20px;
-            min-height: calc(100vh - 160px);
+            min-height: calc(100vh - 90px);
         }
         
         /* Responsive adjustments */
@@ -657,7 +652,7 @@
             }
             
             .main-content {
-                padding-top: 150px;
+                padding-top: 85px;
                 padding-left: 15px;
                 padding-right: 15px;
             }
@@ -732,14 +727,8 @@
                 height: 28px;
             }
             
-            /* Adjust user nav position for smaller header */
-            .user-nav {
-                top: 60px;
-                padding: 10px 0;
-            }
-            
             .main-content {
-                padding-top: 130px;
+                padding-top: 75px;
                 padding-left: 10px;
                 padding-right: 10px;
             }
@@ -1090,7 +1079,28 @@
         {% endif %}
     </header>
     
-    <!-- User Navigation Menu (Below Header) -->
+    <!-- Navigation removed from header area -->
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- User Navigation Menu (Above Footer) -->
     {% if current_user.is_authenticated %}
     <nav class="user-nav">
         <div class="user-nav-grid">
@@ -1131,7 +1141,6 @@
                 <span>Logout</span>
             </a>
         </div>
-
     </nav>
     {% else %}
     <nav class="user-nav">
@@ -1151,25 +1160,6 @@
         </div>
     </nav>
     {% endif %}
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container-fluid">
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            {% block content %}{% endblock %}
-        </div>
-    </main>
 
     <!-- Admin Navigation Menu (Above Footer) -->
     {% if current_user.is_authenticated and current_user.is_admin %}
