@@ -22,7 +22,7 @@
             <div class="card border-0 shadow">
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('promotions.create_promotion') }}">
-                        {{ csrf_token() }}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         
                         <!-- Campaign Title -->
                         <div class="mb-3">

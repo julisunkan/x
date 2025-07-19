@@ -49,6 +49,14 @@ def create_promotion():
     
     # Process form submission
     try:
+        # Validate CSRF token
+        from flask_wtf.csrf import validate_csrf
+        try:
+            validate_csrf(request.form.get('csrf_token'))
+        except Exception:
+            flash('Security token invalid. Please try again.', 'error')
+            return redirect(url_for('promotions.create_promotion'))
+        
         title = request.form.get('title', '').strip()
         description = request.form.get('description', '').strip()
         social_url = request.form.get('social_url', '').strip()
