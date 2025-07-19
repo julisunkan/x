@@ -24,13 +24,34 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def save_uploaded_file(file, subfolder='general'):
-    """Save uploaded file and return the file path"""
+    """Save uploaded file with automatic image compression and return the file path"""
     if file and allowed_file(file.filename):
+        from utils.image_processor import validate_image_file, save_compressed_image
+        
         # Create upload directory if it doesn't exist
         upload_dir = os.path.join(UPLOAD_FOLDER, subfolder)
         os.makedirs(upload_dir, exist_ok=True)
         
-        # Generate unique filename
+        # Check if it's an image file that can be compressed
+        if validate_image_file(file):
+            try:
+                # Generate filename prefix
+                original_name = os.path.splitext(secure_filename(file.filename))[0]
+                filename_prefix = f"{original_name}_{uuid.uuid4().hex[:8]}"
+                
+                # Save compressed image (max 15KB)
+                compressed_filename = save_compressed_image(
+                    file, upload_dir, filename_prefix, max_size_kb=15
+                )
+                
+                # Return relative path from uploads directory (without 'uploads/' prefix)
+                return os.path.join(subfolder, compressed_filename)
+                
+            except Exception as e:
+                logging.error(f"Image compression failed, saving original: {str(e)}")
+                # Fall back to original save method for non-image files or compression failures
+        
+        # Handle non-image files or compression failures with original method
         filename = secure_filename(file.filename)
         name, ext = os.path.splitext(filename)
         unique_filename = f"{name}_{uuid.uuid4().hex[:8]}{ext}"

@@ -145,10 +145,29 @@ def upload_payment_proof(promotion_id):
         return redirect(url_for('promotions.view_promotion', promotion_id=promotion_id))
     
     if file and allowed_file(file.filename):
-        # Generate unique filename
-        filename = f"{promotion.invoice_number}_{secure_filename(file.filename)}"
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+        from utils.image_processor import validate_image_file, save_compressed_image
+        
+        # Check if it's an image file that can be compressed
+        if validate_image_file(file):
+            try:
+                # Save compressed image with unique filename prefix
+                filename_prefix = f"payment_{promotion.invoice_number}"
+                compressed_filename = save_compressed_image(
+                    file, UPLOAD_FOLDER, filename_prefix, max_size_kb=15
+                )
+                filename = compressed_filename
+                
+            except Exception as e:
+                logging.error(f"Payment proof compression failed: {str(e)}")
+                # Fall back to original save method
+                filename = f"{promotion.invoice_number}_{secure_filename(file.filename)}"
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(file_path)
+        else:
+            # Handle non-image files (like PDFs) with original method
+            filename = f"{promotion.invoice_number}_{secure_filename(file.filename)}"
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(file_path)
         
         # Update promotion
         promotion.payment_proof = filename

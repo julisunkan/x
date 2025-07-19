@@ -108,25 +108,29 @@ def register():
         if existing_email:
             form.email.errors.append('Email already registered.')
         
-        # Handle profile image upload
+        # Handle profile image upload with compression
         profile_image_filename = None
         if form.profile_image.data:
             file = form.profile_image.data
             if file.filename:
-                # Create uploads directory if it doesn't exist
-                upload_dir = os.path.join(os.getcwd(), 'static', 'uploads', 'profiles')
-                os.makedirs(upload_dir, exist_ok=True)
+                from utils.image_processor import validate_image_file, save_compressed_image
                 
-                # Generate unique filename
-                filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
-                filepath = os.path.join(upload_dir, filename)
-                
-                try:
-                    file.save(filepath)
-                    profile_image_filename = filename
-                except Exception as e:
-                    logging.error(f"Profile image upload error: {str(e)}")
-                    form.profile_image.errors.append('Failed to upload profile image.')
+                # Validate image file
+                if not validate_image_file(file):
+                    form.profile_image.errors.append('Please upload a valid image file (JPG, PNG, GIF, BMP, WebP).')
+                else:
+                    upload_dir = os.path.join(os.getcwd(), 'static', 'uploads', 'profiles')
+                    
+                    try:
+                        # Save compressed image (max 15KB)
+                        filename_prefix = f"profile_{uuid.uuid4().hex[:8]}"
+                        profile_image_filename = save_compressed_image(
+                            file, upload_dir, filename_prefix, max_size_kb=15
+                        )
+                        logging.info(f"Profile image compressed and saved: {profile_image_filename}")
+                    except Exception as e:
+                        logging.error(f"Profile image upload/compression error: {str(e)}")
+                        form.profile_image.errors.append('Failed to process profile image. Please try a different image.')
         
         # If there are validation errors, return to form
         if form.username.errors or form.email.errors or form.profile_image.errors:
