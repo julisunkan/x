@@ -1,101 +1,121 @@
-/* Custom styles for RoseCoin Mining Platform */
+/* Custom styles for DigitalSkeletonCoin Mining Platform */
 
 :root {
-  --rosecoin-primary: #ff6b6b;
-  --rosecoin-secondary: #4ecdc4;
-  --rosecoin-warning: #ffe66d;
-  --rosecoin-success: #51cf66;
-  --rosecoin-info: #74c0fc;
-  --rosecoin-danger: #ff8787;
+  --dsc-primary: #6366f1;
+  --dsc-secondary: #8b5cf6;
+  --dsc-success: #10b981;
+  --dsc-warning: #f59e0b;
+  --dsc-info: #3b82f6;
+  --dsc-danger: #ef4444;
+  --dsc-light: #f8fafc;
+  --dsc-dark: #1e293b;
 }
 
 /* Global Styles */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
+  color: #334155;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-/* Custom scrollbar for dark theme */
+/* Custom scrollbar for light theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bs-gray-800);
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bs-gray-600);
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--bs-gray-500);
+  background: #94a3b8;
 }
 
 /* Card improvements */
 .card {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Button improvements */
 .btn {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+  border: none;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--bs-primary), var(--bs-blue));
-  border: none;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
 .btn-success {
-  background: linear-gradient(135deg, var(--bs-success), var(--bs-green));
-  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3);
 }
 
 .btn-warning {
-  background: linear-gradient(135deg, var(--bs-warning), var(--bs-yellow));
-  border: none;
-  color: var(--bs-dark);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.3);
 }
 
 .btn-info {
-  background: linear-gradient(135deg, var(--bs-info), var(--bs-cyan));
-  border: none;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, var(--bs-danger), var(--bs-red));
-  border: none;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.3);
 }
 
 /* Progress bars */
 .progress {
-  height: 8px;
-  border-radius: 10px;
-  background-color: var(--bs-gray-700);
+  height: 10px;
+  border-radius: 50px;
+  background-color: #e5e7eb;
+  overflow: hidden;
 }
 
 .progress-bar {
-  border-radius: 10px;
-  transition: width 0.6s ease;
+  border-radius: 50px;
+  transition: width 0.8s ease;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
 }
 
 .progress-sm {
-  height: 4px;
+  height: 6px;
 }
 
 /* Badges */
@@ -118,29 +138,35 @@ body {
 
 /* Form improvements */
 .form-control, .form-select {
-  border-radius: 8px;
-  border: 1px solid var(--bs-gray-600);
-  background-color: var(--bs-gray-800);
-  color: var(--bs-light);
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #374151;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .form-control:focus, .form-select:focus {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
-  background-color: var(--bs-gray-800);
-  color: var(--bs-light);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #374151;
+  outline: none;
 }
 
 .input-group-text {
-  background-color: var(--bs-gray-700);
-  border-color: var(--bs-gray-600);
-  color: var(--bs-light);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: #e5e7eb;
+  color: #6b7280;
+  border-radius: 12px;
 }
 
 /* Table improvements */
 .table-hover tbody tr:hover {
-  background-color: var(--bs-gray-800);
+  background-color: rgba(99, 102, 241, 0.05);
+  transform: scale(1.01);
+  transition: all 0.3s ease;
 }
 
 /* Specific component styles */
@@ -153,12 +179,13 @@ body {
 
 /* Avatar improvements */
 .rounded-circle {
-  border: 2px solid var(--bs-gray-600);
-  transition: border-color 0.2s ease-in-out;
+  border: 3px solid rgba(99, 102, 241, 0.2);
+  transition: all 0.3s ease;
 }
 
 .rounded-circle:hover {
-  border-color: var(--bs-primary);
+  border-color: #6366f1;
+  transform: scale(1.05);
 }
 
 /* Loading states */
@@ -182,26 +209,27 @@ body {
 
 /* Custom utilities */
 .text-gradient {
-  background: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-weight: 700;
 }
 
 .bg-gradient-primary {
-  background: linear-gradient(135deg, var(--bs-primary), var(--bs-blue)) !important;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
 }
 
 .bg-gradient-success {
-  background: linear-gradient(135deg, var(--bs-success), var(--bs-green)) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
 }
 
 .bg-gradient-warning {
-  background: linear-gradient(135deg, var(--bs-warning), var(--bs-yellow)) !important;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
 }
 
 .bg-gradient-info {
-  background: linear-gradient(135deg, var(--bs-info), var(--bs-cyan)) !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
 }
 
 /* Coin animation */
