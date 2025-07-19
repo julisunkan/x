@@ -34,3 +34,8 @@ flask-sqlalchemy
 gunicorn
 psycopg2-binary
 weasyprint
+email_validator
+flask
+flask-sqlalchemy
+gunicorn
+psycopg2-binary
