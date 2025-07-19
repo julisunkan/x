@@ -1,5 +1,5 @@
-// RoseCoin App JavaScript
-class RoseCoinApp {
+// DigitalSkeletonCoin (DSC) App JavaScript
+class DigitalSkeletonCoinApp {
     constructor() {
         this.init();
     }
@@ -269,7 +269,7 @@ function toggleSidebarCollapse() {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    window.app = new RoseCoinApp();
+    window.app = new DigitalSkeletonCoinApp();
 });
 
 // Mining button functionality

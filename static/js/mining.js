@@ -1,4 +1,4 @@
-// Mining functionality for RoseCoin Platform
+// Mining functionality for DigitalSkeletonCoin (DSC) Platform
 
 class MiningManager {
     constructor() {
@@ -493,7 +493,7 @@ function claimMissionReward(missionId) {
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === '/') {
         e.preventDefault();
-        alert('Mining Controls:\n\nSpacebar - Mine RoseCoins\nCtrl+/ - Show this help');
+        alert('Mining Controls:\n\nSpacebar - Mine DigitalSkeletonCoin (DSC)s\nCtrl+/ - Show this help');
     }
 });
 

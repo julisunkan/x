@@ -1,8 +1,8 @@
-// Dark mode functionality for RoseCoin Platform
+// Dark mode functionality for DigitalSkeletonCoin (DSC) Platform
 
 class DarkModeManager {
     constructor() {
-        this.storageKey = 'rosecoin-theme';
+        this.storageKey = 'digitalskeletoncoin-theme';
         this.themeToggleBtn = null;
         this.themeIcon = null;
         this.currentTheme = 'dark'; // Default theme
@@ -354,7 +354,7 @@ window.setLightMode = function() {
 
 // Listen for theme preference changes and update accordingly
 window.addEventListener('storage', (e) => {
-    if (e.key === 'rosecoin-theme' && window.darkModeManager) {
+    if (e.key === 'digitalskeletoncoin-theme' && window.darkModeManager) {
         window.darkModeManager.loadSavedTheme();
         window.darkModeManager.applyTheme(window.darkModeManager.currentTheme);
         window.darkModeManager.updateToggleButton();

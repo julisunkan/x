@@ -1,14 +1,16 @@
-# RoseCoin Mining Platform
+# DigitalSkeletonCoin (DSC) Mining Platform
 
 ## Overview
 
-RoseCoin is a gamified cryptocurrency mining platform built with Flask, featuring tap-to-mine mechanics, social media tasks, referral systems, and airdrops. The platform provides an engaging way for users to earn virtual coins through various activities while building a community around social media engagement.
+DigitalSkeletonCoin (DSC) is a gamified cryptocurrency mining platform built with Flask, featuring tap-to-mine mechanics, social media tasks, referral systems, and airdrops. The platform provides an engaging way for users to earn virtual coins through various activities while building a community around social media engagement.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
+
+- **Complete Rebranding to DigitalSkeletonCoin (DSC) (July 19, 2025)**: Changed all occurrences of "RoseCoin" to "DigitalSkeletonCoin (DSC)" throughout the entire platform. Updated database configuration, admin user setup, JavaScript classes, HTML templates, manifest files, and documentation. Fixed JavaScript class name references and PWA metadata. Platform now fully branded as DigitalSkeletonCoin (DSC).
 
 - **Email Verification & Password Reset Removal (July 17, 2025)**: Completely removed email verification and password reset functionality. Users can now register and login immediately without email verification. Email addresses are still collected for airdrop/task notifications. Updated registration form to inform users about valid email importance. Simplified admin panel by removing email verification features.
 - **SMTP Email System Implementation (July 17, 2025)**: Completely replaced SendGrid with SMTP-based email system using database configuration. Added connection testing functionality in admin panel with success/error feedback. All emails now use SMTP with proper error handling and configuration validation.
@@ -24,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced User Experience**: Improved header with balance display, user avatar, and smooth animations.
 - **UI/UX Improvements (July 2025)**: Enhanced platform with responsive, colorful design and improved user experience.
 - **Dynamic Theme System**: Implemented real-time color scheme changes that reflect across the entire platform.
-- **Customizable Branding**: Added ability to edit app name "RoseCoin" from admin panel with dynamic template updates.
+- **Customizable Branding**: Added ability to edit app name "DigitalSkeletonCoin (DSC)" from admin panel with dynamic template updates.
 - **Database Download Fix**: Fixed database export functionality with proper file download handling.
 - **Responsive Design**: Improved mobile responsiveness with better card layouts and grid systems.
 - **Enhanced Visual Design**: Added gradient backgrounds, circular icons, and modern UI elements.

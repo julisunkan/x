@@ -6,7 +6,7 @@ class AppSettings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     # App branding
-    app_name = db.Column(db.String(100), default='RoseCoin Mining Platform')
+    app_name = db.Column(db.String(100), default='DigitalSkeletonCoin (DSC) Mining Platform')
     app_description = db.Column(db.Text, default='A gamified cryptocurrency mining platform')
     app_logo = db.Column(db.String(200))  # URL or path to logo
     

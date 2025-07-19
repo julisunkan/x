@@ -1,7 +1,7 @@
 {
-  "name": "RoseCoin Mining Platform",
-  "short_name": "RoseCoin",
-  "description": "Mine, earn, and grow with RoseCoin!",
+  "name": "DigitalSkeletonCoin (DSC) Mining Platform",
+  "short_name": "DSC",
+  "description": "Mine, earn, and grow with DigitalSkeletonCoin (DSC)!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#212529",

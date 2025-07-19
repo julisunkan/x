@@ -1,4 +1,4 @@
-# RoseCoin Requirements Documentation
+# DigitalSkeletonCoin (DSC) Requirements Documentation
 
 ## Python Dependencies (Installed via packager_tool)
 
@@ -38,7 +38,7 @@ All core system dependencies are managed by the Replit environment and are autom
 ## Development vs Production
 
 ### Development (Current)
-- Uses SQLite database (`instance/rosecoin.db`)
+- Uses SQLite database (`instance/digitalskeletoncoin.db`)
 - Debug mode enabled with hot reload
 - File uploads stored locally in `static/uploads/`
 - Environment variables managed by Replit

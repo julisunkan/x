@@ -27,7 +27,7 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Database Configuration
-database_url = os.environ.get("DATABASE_URL") or "sqlite:///rosecoin.db"
+database_url = os.environ.get("DATABASE_URL") or "sqlite:///digitalskeletoncoin.db"
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
@@ -261,11 +261,11 @@ def create_tables():
         from werkzeug.security import generate_password_hash
 
         try:
-            existing_admin = User.query.filter_by(email='admin@rosecoin.com').first()
+            existing_admin = User.query.filter_by(email='admin@digitalskeletoncoin.com').first()
             if not existing_admin:
                 admin_user = User(
                     username='admin',
-                    email='admin@rosecoin.com',
+                    email='admin@digitalskeletoncoin.com',
                     password_hash=generate_password_hash('admin123'),
                     is_admin=True,
                     email_verified=True,  # Admin user is pre-verified
